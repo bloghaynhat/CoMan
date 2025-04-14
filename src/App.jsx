@@ -1,33 +1,42 @@
-import Header from "./components/Header"
-import Footer from "./components/Footer"
-import SideMenu from "./components/SideMenu"
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom"
-import RootPage from "./pages/RootPage"
-import TrangChu from "./pages/TrangChu"
-import LoTrinh from "./pages/LoTrinh"
-import BaiViet from "./pages/BaiViet"
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import RootPage from "./pages/RootPage/RootPage";
+import TrangChu from "./pages/TrangChu";
+import LoTrinh from "./pages/LoTrinh";
+import BaiViet from "./pages/BaiViet";
+import VeChungToi from "./pages/VeChungToi";
+import SuKien from "./pages/SuKien";
+
 const router = createBrowserRouter([
   {
-    path: "/", 
-    element: <RootPage/>,  
+    path: "/",
+    element: <RootPage />,
     children: [
       {
-        path: "trangchu", element: <TrangChu/>
+        path: "/",
+        element: <TrangChu />,
       },
       {
-        path: "lotrinh", element: <LoTrinh/>
+        path: "roadmaps",
+        element: <LoTrinh />,
       },
       {
-        path: "baiviet", element: <BaiViet/>
-      }
-    ]
-  }
-])
+        path: "baiviet",
+        element: <BaiViet />,
+      },
+      {
+        path: "events",
+        element: <SuKien />,
+      },
+      {
+        path: "about",
+        element: <VeChungToi />,
+      },
+    ],
+  },
+]);
 
 function App() {
-
-  return <RouterProvider router={router}></RouterProvider>
-  
+  return <RouterProvider router={router}></RouterProvider>;
 }
 
-export default App
+export default App;
