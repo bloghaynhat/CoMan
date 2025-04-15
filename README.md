@@ -7,4 +7,5 @@ Web quản lí bán khóa học
 - tailwindcss
 - lucide-react: Cung cấp icon
 - react-router-dom: Điều hướng trang
-- react-slick slick-carousel: Tùy chỉnh carousel
+- embla-carousel-react: Tùy chỉnh carousel
+- axios jwt-decode: xử lí api và jwt

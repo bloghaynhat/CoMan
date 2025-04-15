@@ -5,6 +5,7 @@ import LoTrinh from "./pages/LoTrinh";
 import BaiViet from "./pages/BaiViet";
 import VeChungToi from "./pages/VeChungToi";
 import SuKien from "./pages/SuKien";
+import Login from "./pages/Loginout/Login";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
         element: <VeChungToi />,
       },
     ],
+  },
+  {
+    path: "login",
+    element: <Login />,
   },
 ]);
 
