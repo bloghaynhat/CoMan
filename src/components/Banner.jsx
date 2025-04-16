@@ -1,51 +1,76 @@
 // Banner.jsx
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, EffectFade } from "swiper/modules";
+import { Autoplay, Pagination, EffectFlip } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/effect-fade";
+import "swiper/css/effect-flip";
 
 const slides = [
   {
     title: "Học mọi lúc, mọi nơi cùng Coman",
     description:
       "Khám phá hàng trăm khóa học từ cơ bản đến nâng cao, giúp bạn chinh phục mọi mục tiêu học tập.",
+    image: "https://res.cloudinary.com/dbv9csgia/image/upload/v1744821319/Nhung-cach-giup-ban-hoc-online-hieu-qua-1_pr02cu.jpg",
   },
   {
     title: "Nâng cao kỹ năng của bạn",
     description:
       "Từ lập trình, thiết kế đến marketing – có khóa học cho tất cả mọi người.",
+    image: "https://res.cloudinary.com/dbv9csgia/image/upload/v1744821318/lap-trinh-vien-thumb_lrbhfn.jpg",
   },
   {
-    title: "Học tập dễ dàng, hiệu quả",
+    title: "Nắm bắt được HTML CSS và JavaScript",
     description:
-      "Giao diện thân thiện, bài giảng chất lượng – học chưa bao giờ đơn giản đến thế.",
+      "Khóa học giúp bạn nắm vững kiến thức về HTML, CSS và JavaScript, từ cơ bản đến nâng cao.",
+    image: "https://res.cloudinary.com/dbv9csgia/image/upload/v1744821572/1697274440798_vuxu5d.png",
+  },
+  {
+    title: "Dậm lên ReactJS",
+    description:
+      "Khóa học giúp bạn nắm vững kiến thức về ReactJS, từ cơ bản đến nâng cao.",
+    image: "https://res.cloudinary.com/dbv9csgia/image/upload/v1744821571/maxresdefault_hnilyc.jpg",
+  },
+  {
+    title: "làm chủ cấu trúc dữ liệu và giải thuật",
+    description:
+      "Khóa học giúp bạn nắm vững kiến thức về cấu trúc dữ liệu và giải thuật, từ cơ bản đến nâng cao.",
+    image: "https://res.cloudinary.com/dbv9csgia/image/upload/v1744821437/cau-truc-du-lieu-va-giai-thuat_ef33392c074c4cd29a9892f11abbc2bc_mejlfk.png",
   },
 ];
 
 const Banner = () => {
   return (
-    <section className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white py-16 w-[95%] m-auto my-4 rounded-lg">
-      <div className="container mx-auto px-4">
-        <Swiper
-          modules={[Autoplay, Pagination, EffectFade]}
-          autoplay={{ delay: 4000, disableOnInteraction: false }}
-          pagination={{ clickable: true }}
-          effect="fade"
-          loop
-        >
-          {slides.map((slide, index) => (
-            <SwiperSlide key={index}>
-              <div className="w-full max-w-5xl mx-auto bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-8 text-center">
-                <h1 className="text-4xl font-bold mb-4">{slide.title}</h1>
-                <p className="text-lg">{slide.description}</p>
+    <section className="w-[95%] m-auto my-4 rounded-lg overflow-hidden">
+      <Swiper
+        modules={[Autoplay, Pagination, EffectFlip]}
+        autoplay={{ delay: 4000, disableOnInteraction: false }}
+        pagination={{ clickable: true }}
+        effect="flip"
+        loop
+        flipEffect={{
+          slideShadows: true,
+          limitRotation: true,
+        }}
+        className="h-[300px] md:h-[350px]"
+      >
+        {slides.map((slide, index) => (
+          <SwiperSlide key={index}>
+            <div
+              className="h-full w-full bg-cover bg-center flex items-center justify-center"
+              style={{ backgroundImage: `url(${slide.image})` }}
+            >
+              <div className="bg-black/50 backdrop-blur-sm rounded-lg shadow-lg p-8 text-center text-white max-w-3xl">
+                <h1 className="text-2xl md:text-4xl font-bold mb-4">
+                  {slide.title}
+                </h1>
+                <p className="text-base md:text-lg">{slide.description}</p>
               </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </section>
   );
 };

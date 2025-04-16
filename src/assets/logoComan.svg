@@ -1,0 +1,12 @@
+<svg width="200" height="60" viewBox="0 0 300 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="300" height="80" rx="12" fill="url(#bgGradient)" />
+    <path d="M60 25L70 20L80 25V55L70 60L60 55V25Z" fill="#fff" opacity="0.9" />
+    <path d="M70 20V60" stroke="#FFD700" stroke-width="2" />
+    <text x="100" y="50" fill="white" font-family="Arial, sans-serif" font-size="32" font-weight="bold">Coman</text>
+    <defs>
+        <linearGradient id="bgGradient" x1="0" y1="0" x2="300" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4F46E5" />
+            <stop offset="1" stop-color="#3B82F6" />
+        </linearGradient>
+    </defs>
+</svg>
