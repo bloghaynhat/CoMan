@@ -2,7 +2,7 @@ import React from "react";
 
 const CourseCard = ({ course, type }) => {
   return (
-    <div className="flex-shrink-0 w-64 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+    <div className="flex-shrink-0 w-64 bg-white rounded-lg shadow-md overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
       <img
         src={course.image}
         alt={course.title}
