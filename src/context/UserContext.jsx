@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect } from "react";
 
 export const UserContext = createContext();
 
-export const UserProvider = ({ children }) => {
+const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); // user: { firstname, lastname, role }
 
   useEffect(() => {
@@ -40,3 +40,5 @@ export const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
+export { UserProvider };

@@ -7,7 +7,6 @@ function Header() {
   const { user, logoutUser } = useContext(UserContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   const navItems = [
     { name: "Trang chủ", path: "/" },
     { name: "Lộ trình", path: "/roadmaps" },

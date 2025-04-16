@@ -47,13 +47,9 @@ export const refreshToken = async () => {
       refresh: refreshToken,
     });
 
-    // Giải mã access token để lấy thông tin user (bao gồm role)
-    const decodedToken = jwt_decode(response.data.access);
-    const role = decodedToken.role; // Giả sử token chứa thông tin role
-
     // Lưu lại access token mới vào localStorage và cập nhật role
     localStorage.setItem("access_token", response.data.access);
-    localStorage.setItem("role", role); // Cập nhật role vào localStorage
+    localStorage.setItem("role", response.data.role); // Cập nhật role vào localStorage
 
     return response.data; // Trả về dữ liệu token mới
   } catch (error) {
