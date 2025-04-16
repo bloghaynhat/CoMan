@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../api/auth";
+import { login, getUserInfo } from "../../api/auth";
+import { UserContext } from "../../context/UserContext";
 
 const Login = () => {
+  const { loginUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -10,6 +12,15 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const data = await login(username, password); // Gọi API login
+      const userInfo = await getUserInfo(data.access);
+
+      loginUser({
+        first_name: userInfo.first_name,
+        last_name: userInfo.last_name,
+        role: data.role,
+        access_token: data.access,
+        refresh_token: data.refresh,
+      });
 
       console.log("Login successful!");
       if (data.role === "admin") {
