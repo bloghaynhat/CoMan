@@ -16,7 +16,7 @@ const VeChungToi = () => {
     <div className="max-w-7xl mx-auto px-4 py-8">
 
       <section className="mb-8 bg-gradient-to-r from-indigo-500 to-[#00c9ff] rounded flex">
-        <div className="marquee overflow-auto m-6">  {/* Thêm overflow-auto */}
+        <div className="marquee overflow-auto m-7">  {/* Thêm overflow-auto */}
           <p className="text-lg text-white text-justify ">
             Chúng tôi cung cấp các khóa học trực tuyến chất lượng cao, giúp bạn phát triển kỹ năng
             và kiến thức một cách toàn diện. Với sứ mệnh mang lại trải <br/> nghiệm học tập tốt nhất,
