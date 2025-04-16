@@ -10,10 +10,13 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const data = await login(username, password); // Gọi API login
+
       console.log("Login successful!");
       if (data.role === "admin") {
+        console.log("Admin tới");
         navigate("/admin");
       } else {
+        console.log("User tới");
         navigate("/");
       }
     } catch (error) {
