@@ -6,6 +6,7 @@ import BaiViet from "./pages/BaiViet";
 import VeChungToi from "./pages/VeChungToi";
 import SuKien from "./pages/SuKien";
 import Login from "./pages/Loginout/Login";
+import CourseDetail from "./pages/CourseDetail";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "about",
         element: <VeChungToi />,
+      },
+      {
+        path: "course/:id",
+        element: <CourseDetail />,
       },
     ],
   },
