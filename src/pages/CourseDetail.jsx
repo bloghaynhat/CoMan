@@ -161,7 +161,6 @@ const CourseDetail = () => {
         return stars
     }
 
-    // Define theme colors based on course type
     const themeColors =
         course.type === "paid"
             ? {
