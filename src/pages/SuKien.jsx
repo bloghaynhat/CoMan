@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import FeaturedEventsBanner from "../components/FeaturedEventsBanner";
+import FeaturedEventsBannerAll from "../components/FeaturedEventsBannerAll";
 
 const SuKien = () => {
 
@@ -10,6 +11,7 @@ const SuKien = () => {
         <h2 className="text-2xl font-bold mb-6">Sự kiện nổi bật</h2>
       </blockquote>
       <FeaturedEventsBanner />
+      <FeaturedEventsBannerAll />
 
 
 
