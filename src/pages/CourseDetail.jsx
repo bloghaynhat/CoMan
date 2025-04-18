@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 
@@ -216,8 +214,8 @@ const CourseDetail = () => {
                     <div className="absolute top-4 left-4">
                         <span
                             className={`px-3 py-1 rounded-full text-sm font-medium ${course.type === "paid"
-                                    ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
-                                    : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
+                                ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
+                                : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
                                 }`}
                         >
                             {course.type === "paid" ? "Premium" : "Free"}
