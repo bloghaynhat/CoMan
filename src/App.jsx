@@ -6,6 +6,8 @@ import BaiViet from "./pages/BaiViet";
 import VeChungToi from "./pages/VeChungToi";
 import SuKien from "./pages/SuKien";
 import Login from "./pages/Loginout/Login";
+import { UserProvider } from "./context/UserContext";
+import Dashboard from "./pages/Admin/DashboardAdmin";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +39,10 @@ const router = createBrowserRouter([
   {
     path: "login",
     element: <Login />,
+  },
+  {
+    path: "admin",
+    element: <Dashboard />,
   },
 ]);
 
