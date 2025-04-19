@@ -10,6 +10,7 @@ const TrangChu = () => {
       title: "HTML & CSS Cơ bản",
       instructor: "Nguyễn Văn A",
       rating: 4.5,
+      type: "free",
       image:
         "https://plus.unsplash.com/premium_photo-1731951687921-4b2029496c98?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
@@ -18,6 +19,7 @@ const TrangChu = () => {
       title: "JavaScript cho người mới",
       instructor: "Trần Thị B",
       rating: 4.7,
+      type: "free",
       image:
         "https://plus.unsplash.com/premium_photo-1731951687921-4b2029496c98?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
@@ -26,6 +28,7 @@ const TrangChu = () => {
       title: "Giới thiệu về ReactJS",
       instructor: "Lê Văn C",
       rating: 4.3,
+      type: "free",
       image:
         "https://plus.unsplash.com/premium_photo-1731951687921-4b2029496c98?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
@@ -34,6 +37,7 @@ const TrangChu = () => {
       title: "Lập trình Python cơ bản",
       instructor: "Phạm Thị D",
       rating: 4.6,
+      type: "free",
       image:
         "https://plus.unsplash.com/premium_photo-1731951687921-4b2029496c98?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
@@ -46,6 +50,7 @@ const TrangChu = () => {
       price: 500000,
       instructor: "Nguyễn Văn A",
       rating: 4.8,
+      type: "paid",
       image:
         "https://plus.unsplash.com/premium_photo-1731951687921-4b2029496c98?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
@@ -55,6 +60,7 @@ const TrangChu = () => {
       price: 700000,
       instructor: "Trần Thị B",
       rating: 4.9,
+      type: "paid",
       image:
         "https://plus.unsplash.com/premium_photo-1731951687921-4b2029496c98?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
@@ -64,6 +70,7 @@ const TrangChu = () => {
       price: 600000,
       instructor: "Lê Văn C",
       rating: 4.5,
+      type: "paid",
       image:
         "https://plus.unsplash.com/premium_photo-1731951687921-4b2029496c98?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
@@ -73,6 +80,7 @@ const TrangChu = () => {
       price: 800000,
       instructor: "Phạm Thị D",
       rating: 4.7,
+      type: "paid",
       image:
         "https://plus.unsplash.com/premium_photo-1731951687921-4b2029496c98?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
