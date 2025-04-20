@@ -3,7 +3,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import CourseCard from "./CourseCard";
 
-function CourseSection({ title, courses, type }) {
+function CourseSection({ title, courses }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: "start",
@@ -28,7 +28,7 @@ function CourseSection({ title, courses, type }) {
                   key={course.id}
                   className="flex-0 shrink-0 grow-0 min-w-[280px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[340px]"
                 >
-                  <CourseCard course={course} type={type} />
+                  <CourseCard course={course} />
                 </div>
               ))}
             </div>
