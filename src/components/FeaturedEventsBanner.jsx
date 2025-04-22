@@ -125,6 +125,12 @@ const FeaturedEventsBanner = () => {
     return new Date(dateString).toLocaleDateString("vi-VN", options)
   }
 
+  const XemChiTiết = (id) => {
+    // Hien thi trang thong tin cho su kien do 
+    
+
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
   
@@ -188,6 +194,7 @@ const FeaturedEventsBanner = () => {
               <a
                 href={`/events/${event.id}`}
                 className="flex items-center justify-center w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+                onClick={(e) => {XemChiTiết(event.id)}}
               >
                 Xem chi tiết
                 <ChevronRight className="h-4 w-4 ml-1" />
