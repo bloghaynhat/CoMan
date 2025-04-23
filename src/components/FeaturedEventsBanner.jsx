@@ -1,11 +1,20 @@
-"use client"
 
 import { useState } from "react"
 import { ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Info } from "lucide-react"
+import EventDetailModal from "./EventDetailModal.jsx"
 
 const FeaturedEventsBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const eventsPerPage = 3
+
+  // Su kien khi click vao xem chi tiet
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  // Ham xem chi tiet su kien
+  const XemChiTiet = (id) => {
+    const event = eventsData.find((e) => e.id === id)
+    setSelectedEvent(event)
+  }
+
 
   const eventsData = [
     {
@@ -125,15 +134,10 @@ const FeaturedEventsBanner = () => {
     return new Date(dateString).toLocaleDateString("vi-VN", options)
   }
 
-  const XemChiTiết = (id) => {
-    // Hien thi trang thong tin cho su kien do 
-    
-
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-  
+
 
       {/* Events grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -194,7 +198,10 @@ const FeaturedEventsBanner = () => {
               <a
                 href={`/events/${event.id}`}
                 className="flex items-center justify-center w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
-                onClick={(e) => {XemChiTiết(event.id)}}
+                onClick={(e) => {
+                  e.preventDefault()
+                  XemChiTiet(event.id)
+                }}
               >
                 Xem chi tiết
                 <ChevronRight className="h-4 w-4 ml-1" />
@@ -209,11 +216,10 @@ const FeaturedEventsBanner = () => {
         <button
           onClick={handlePrev}
           disabled={currentIndex === 0}
-          className={`flex items-center px-4 py-2 rounded-md ${
-            currentIndex === 0
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-          }`}
+          className={`flex items-center px-4 py-2 rounded-md ${currentIndex === 0
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            }`}
         >
           <ChevronLeft className="h-5 w-5 mr-1" />
           <span>Trước</span>
@@ -228,16 +234,23 @@ const FeaturedEventsBanner = () => {
         <button
           onClick={handleNext}
           disabled={currentIndex + eventsPerPage >= eventsData.length}
-          className={`flex items-center px-4 py-2 rounded-md ${
-            currentIndex + eventsPerPage >= eventsData.length
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-          }`}
+          className={`flex items-center px-4 py-2 rounded-md ${currentIndex + eventsPerPage >= eventsData.length
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            }`}
         >
           <span>Tiếp theo</span>
           <ChevronRight className="h-5 w-5 ml-1" />
         </button>
       </div>
+
+      {/* Modal for event details */}
+      {selectedEvent && (
+        <EventDetailModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
     </div>
   )
 }

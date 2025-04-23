@@ -5,6 +5,10 @@ import LoTrinh from "./pages/LoTrinh";
 import BaiViet from "./pages/BaiViet";
 import VeChungToi from "./pages/VeChungToi";
 import SuKien from "./pages/SuKien";
+import Login from "./pages/Loginout/Login";
+import CourseDetail from "./pages/CourseDetail";
+import { UserProvider } from "./context/UserContext";
+import Dashboard from "./pages/Admin/DashboardAdmin";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +35,19 @@ const router = createBrowserRouter([
         path: "about",
         element: <VeChungToi />,
       },
+      {
+        path: "course/:id",
+        element: <CourseDetail />,
+      },
     ],
+  },
+  {
+    path: "login",
+    element: <Login />,
+  },
+  {
+    path: "admin",
+    element: <Dashboard />,
   },
 ]);
 

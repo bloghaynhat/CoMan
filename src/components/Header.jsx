@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Search, Menu, X } from "lucide-react";
+import { UserContext } from "../context/UserContext";
 
 function Header() {
+  const { user, logoutUser } = useContext(UserContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   const navItems = [
     { name: "Trang chủ", path: "/" },
     { name: "Lộ trình", path: "/roadmaps" },
@@ -51,18 +52,34 @@ function Header() {
             ))}
           </nav>
           {/* Nút Đăng nhập và Đăng ký */}
-          <Link
-            to="/login"
-            className="px-4 py-2 text-white border border-white rounded-full hover:bg-indigo-700 hover:border-indigo-700 transition-colors"
-          >
-            Đăng nhập
-          </Link>
-          <Link
-            to="/register"
-            className="px-4 py-2 bg-white text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors"
-          >
-            Đăng ký
-          </Link>
+          {user ? (
+            <div>
+              <span className="text-red-400 font-semibold text-xl">
+                Xin chào, {user.first_name} {user.last_name}
+              </span>
+              <button
+                className="mx-4 px-4 py-2 text-white border border-white rounded-full hover:bg-indigo-700 hover:border-indigo-700 transition-colors"
+                onClick={logoutUser}
+              >
+                Đăng xuất
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="px-4 py-2 text-white border border-white rounded-full hover:bg-indigo-700 hover:border-indigo-700 transition-colors"
+              >
+                Đăng nhập
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 bg-white text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors"
+              >
+                Đăng ký
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Icon tìm kiếm và Hamburger menu (Mobile) */}
