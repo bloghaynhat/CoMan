@@ -27,10 +27,14 @@ const FeaturedEventsBanner = () => {
       image: "https://www.gosell.vn/blog/wp-content/uploads/2023/08/frontend-01-1.jpg",
       instructor: "Nguyễn Văn A",
       attendees: 45,
-      description:
-        "Hội thảo chuyên sâu về các công nghệ mới nhất trong lập trình Frontend như React, Next.js và các xu hướng thiết kế UI/UX hiện đại.",
+      description: "Hội thảo chuyên sâu về các công nghệ mới nhất trong lập trình Frontend như React, Next.js và các xu hướng thiết kế UI/UX hiện đại.",
+      additionalDescription: "Hội thảo Lập trình Web Frontend 2024 là một sự kiện không thể bỏ qua dành cho những ai đam mê phát triển web. Trong suốt 3 giờ đồng hồ, bạn sẽ có cơ hội tiếp cận những công nghệ tiên tiến nhất trong lĩnh vực lập trình Frontend. \n\nChương trình sẽ được chia thành nhiều phần, bắt đầu với phần giới thiệu về React và Next.js, nơi bạn sẽ tìm hiểu cách xây dựng các ứng dụng web hiện đại, hiệu suất cao với ít mã nguồn hơn. Bên cạnh đó, chúng tôi sẽ đề cập đến các xu hướng thiết kế UI/UX mới nhất, giúp bạn tạo ra những giao diện người dùng đẹp mắt và thân thiện. \n\nNgoài các bài giảng lý thuyết, bạn sẽ tham gia vào các hoạt động thực hành nhóm, nơi được khuyến khích chia sẻ ý tưởng, giải quyết vấn đề thực tế và nhận phản hồi từ giảng viên. Chúng tôi cũng sẽ tổ chức các buổi phân tích case study từ các dự án thành công, giúp bạn hiểu rõ hơn về cách áp dụng kiến thức vào thực tiễn. \n\nHội thảo không chỉ giúp bạn nâng cao kỹ năng lập trình mà còn là cơ hội tuyệt vời để kết nối với những người cùng chung đam mê. Tham gia sẽ giúp bạn có thêm động lực, ý tưởng mới cho dự án của mình, và thậm chí mở ra những cơ hội nghề nghiệp trong tương lai. Hãy cùng chúng tôi khám phá thế giới lập trình Frontend và biến ý tưởng của bạn thành hiện thực!",
+      duration: "3 giờ",
+      targetAudience: "Lập trình viên, sinh viên công nghệ thông tin, những người yêu thích lập trình web",
+      prerequisites: "Kiến thức cơ bản về HTML, CSS, JavaScript",
+      registrationLink: "https://example.com/register",
       isFeatured: true,
-      price: "Miễn phí",
+      price: "Miễn phí"
     },
     {
       id: 2,
