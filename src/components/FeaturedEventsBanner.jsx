@@ -1,116 +1,39 @@
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Info } from "lucide-react"
 import EventDetailModal from "./EventDetailModal.jsx"
+import axios from "axios";
 
 const FeaturedEventsBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const eventsPerPage = 3
+  const [events, setEvents] = useState([])
 
   // Su kien khi click vao xem chi tiet
   const [selectedEvent, setSelectedEvent] = useState(null)
   // Ham xem chi tiet su kien
   const XemChiTiet = (id) => {
-    const event = eventsData.find((e) => e.id === id)
+    const event = events.find((e) => e.id === id)
     setSelectedEvent(event)
   }
 
 
-  const eventsData = [
-    {
-      id: 1,
-      title: "Hội thảo Lập trình Web Frontend 2024",
-      date: "2024-05-15",
-      time: "09:00 - 12:00",
-      location: "Hà Nội",
-      category: "workshop",
-      image: "https://www.gosell.vn/blog/wp-content/uploads/2023/08/frontend-01-1.jpg",
-      instructor: "Nguyễn Văn A",
-      attendees: 45,
-      description: "Hội thảo chuyên sâu về các công nghệ mới nhất trong lập trình Frontend như React, Next.js và các xu hướng thiết kế UI/UX hiện đại.",
-      additionalDescription: "Hội thảo Lập trình Web Frontend 2024 là một sự kiện không thể bỏ qua dành cho những ai đam mê phát triển web. Trong suốt 3 giờ đồng hồ, bạn sẽ có cơ hội tiếp cận những công nghệ tiên tiến nhất trong lĩnh vực lập trình Frontend. \n\nChương trình sẽ được chia thành nhiều phần, bắt đầu với phần giới thiệu về React và Next.js, nơi bạn sẽ tìm hiểu cách xây dựng các ứng dụng web hiện đại, hiệu suất cao với ít mã nguồn hơn. Bên cạnh đó, chúng tôi sẽ đề cập đến các xu hướng thiết kế UI/UX mới nhất, giúp bạn tạo ra những giao diện người dùng đẹp mắt và thân thiện. \n\nNgoài các bài giảng lý thuyết, bạn sẽ tham gia vào các hoạt động thực hành nhóm, nơi được khuyến khích chia sẻ ý tưởng, giải quyết vấn đề thực tế và nhận phản hồi từ giảng viên. Chúng tôi cũng sẽ tổ chức các buổi phân tích case study từ các dự án thành công, giúp bạn hiểu rõ hơn về cách áp dụng kiến thức vào thực tiễn. \n\nHội thảo không chỉ giúp bạn nâng cao kỹ năng lập trình mà còn là cơ hội tuyệt vời để kết nối với những người cùng chung đam mê. Tham gia sẽ giúp bạn có thêm động lực, ý tưởng mới cho dự án của mình, và thậm chí mở ra những cơ hội nghề nghiệp trong tương lai. Hãy cùng chúng tôi khám phá thế giới lập trình Frontend và biến ý tưởng của bạn thành hiện thực!",
-      duration: "3 giờ",
-      targetAudience: "Lập trình viên, sinh viên công nghệ thông tin, những người yêu thích lập trình web",
-      prerequisites: "Kiến thức cơ bản về HTML, CSS, JavaScript",
-      registrationLink: "https://example.com/register",
-      isFeatured: true,
-      price: "Miễn phí"
-    },
-    {
-      id: 2,
-      title: "HHHHHHHHHHH",
-      date: "2024-05-20",
-      time: "19:30 - 21:00",
-      location: "Online",
-      category: "webinar",
-      image: "https://www.smone.vn/wp-content/uploads/2022/03/Social-share-image-1.png",
-      instructor: "Trần Thị B",
-      attendees: 120,
-      description:
-        "Tìm hiểu về cách AI và Machine Learning đang thay đổi ngành công nghệ và cách bạn có thể bắt đầu sự nghiệp trong lĩnh vực này.",
-      isFeatured: false,
-      price: "Miễn phí",
-    },
-    {
-      id: 3,
-      title: "Ra mắt khóa học: Full-stack JavaScript",
-      date: "2024-05-25",
-      time: "14:00 - 16:00",
-      location: "Hồ Chí Minh",
-      category: "launch",
-      image: "https://www.smone.vn/wp-content/uploads/2022/03/Social-share-image-1.png",
-      instructor: "Lê Văn C",
-      attendees: 75,
-      description:
-        "Sự kiện ra mắt khóa học mới về Full-stack JavaScript với Node.js, Express và React. Đặc biệt giảm giá 30% cho người tham dự sự kiện.",
-      isFeatured: true,
-      price: "100.000đ",
-    },
-    {
-      id: 4,
-      title: "Workshop: UX/UI Design cho người mới bắt đầu",
-      date: "2024-06-05",
-      time: "09:00 - 16:00",
-      location: "Đà Nẵng",
-      category: "workshop",
-      image: "https://www.smone.vn/wp-content/uploads/2022/03/Social-share-image-1.png",
-      instructor: "Phạm Thị D",
-      attendees: 30,
-      description: "Workshop thực hành về thiết kế UX/UI cho người mới bắt đầu.",
-      isFeatured: false,
-      price: "200.000đ",
-    },
-    {
-      id: 5,
-      title: "Hội thảo: Blockchain và Web3",
-      date: "2024-06-10",
-      time: "13:30 - 17:00",
-      location: "Hà Nội",
-      category: "workshop",
-      image: "https://www.smone.vn/wp-content/uploads/2022/03/Social-share-image-1.png",
-      instructor: "Hoàng Văn E",
-      attendees: 60,
-      description:
-        "Khám phá công nghệ Blockchain và Web3, cách chúng đang thay đổi internet và cơ hội nghề nghiệp trong lĩnh vực này.",
-      isFeatured: false,
-      price: "150.000đ",
-    },
-    {
-      id: 6,
-      title: "Webinar: DevOps cho doanh nghiệp",
-      date: "2024-06-15",
-      time: "19:00 - 20:30",
-      location: "Online",
-      category: "webinar",
-      image: "https://www.smone.vn/wp-content/uploads/2022/03/Social-share-image-1.png",
-      instructor: "Trương Văn F",
-      attendees: 90,
-      description:
-        "Tìm hiểu về cách triển khai DevOps trong doanh nghiệp, các công cụ và quy trình giúp tối ưu hóa quá trình phát triển phần mềm.",
-      isFeatured: false,
-      price: "Miễn phí",
-    },
-  ]
+  useEffect(() => {
+    axios.get("https://comanbe.onrender.com/api/events/")
+      .then((response) => {
+        const allEvents = response.data;
+        // Cập nhật state với dữ liệu từ API
+        setEvents(allEvents);
+
+              
+        
+      })
+      .catch((error) => {
+        console.error("Lỗi khi gọi API:", error);
+      });
+  }, []);
+
+  
 
   const categories = [
     { id: 1, name: "Tất cả" },
@@ -121,7 +44,7 @@ const FeaturedEventsBanner = () => {
   ]
 
   const handleNext = () => {
-    if (currentIndex + eventsPerPage < eventsData.length) {
+    if (currentIndex + eventsPerPage < events.length) {
       setCurrentIndex(currentIndex + eventsPerPage)
     }
   }
@@ -145,13 +68,13 @@ const FeaturedEventsBanner = () => {
 
       {/* Events grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {eventsData.slice(currentIndex, currentIndex + eventsPerPage).map((event) => (
+        {events.slice(currentIndex, currentIndex + eventsPerPage).map((event) => (
           <div
             key={event.id}
             className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transform transition-transform hover:scale-[1.02] hover:shadow-xl"
           >
             <div className="relative h-48">
-              <img src={event.image || "/placeholder.svg"} alt={event.title} className="w-full h-full object-cover" />
+              <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
               <div className="absolute top-0 right-0 m-2">
                 <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
                   {event.category}
@@ -231,14 +154,14 @@ const FeaturedEventsBanner = () => {
 
         <div className="flex items-center px-4">
           <span className="text-gray-600">
-            {Math.floor(currentIndex / eventsPerPage) + 1}/{Math.ceil(eventsData.length / eventsPerPage)}
+            {Math.floor(currentIndex / eventsPerPage) + 1}/{Math.ceil(events.length / eventsPerPage)}
           </span>
         </div>
 
         <button
           onClick={handleNext}
-          disabled={currentIndex + eventsPerPage >= eventsData.length}
-          className={`flex items-center px-4 py-2 rounded-md ${currentIndex + eventsPerPage >= eventsData.length
+          disabled={currentIndex + eventsPerPage >= events.length}
+          className={`flex items-center px-4 py-2 rounded-md ${currentIndex + eventsPerPage >= events.length
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
             : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"
             }`}
