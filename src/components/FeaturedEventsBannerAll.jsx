@@ -1,19 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Search } from 'lucide-react';
 import axios from 'axios';
-
+import { UserContext } from "../context/UserContext.jsx";
 const FeaturedEventsBannerAll = () => {
+    const { user } = useContext(UserContext);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All"); // Mặc định là "Tất cả"
     const [allEvents, setAllEvents] = useState([]); // Dữ liệu gốc
     const [filteredEvents, setFilteredEvents] = useState([]);
+    const [allEventsRegister, setAllEventsRegister] = useState([]); // Dữ liệu gốc
+    const [isRegistered, setIsRegistered] = useState(false);
+
+
+    const dangKiSuKien = async (eventId, setIsRegistered) => {
+        const accessToken = user.access_token; // Lấy access token từ context
+        console.log(accessToken);
+    
+        if (!accessToken) {
+            alert("Bạn cần đăng nhập để đăng ký sự kiện.");
+            return;
+        }
+    
+        try {
+            const response = await axios.post(
+                "https://comanbe.onrender.com/api/event-registers/",
+                {
+                    event_id: eventId, // Gửi ID của sự kiện
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`, // Sử dụng access token trong header
+                    },
+                }
+            );
+    
+            console.log(response.data); // In ra phản hồi để kiểm tra
+            alert("Đăng ký sự kiện thành công!");
+            setIsRegistered(true); // Cập nhật trạng thái UI, nếu bạn dùng state
+        } catch (error) {
+            if (error.response) {
+                // In ra lỗi chi tiết để kiểm tra
+                console.error("Error response:", error.response.data);
+    
+                if (error.response.data.detail === "Bạn đã đăng ký sự kiện này rồi.") {
+                    alert("Bạn đã đăng ký sự kiện này rồi.");
+                } else {
+                    alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
+                }
+            } else {
+                alert("Lỗi kết nối. Vui lòng thử lại.");
+                console.error("Connection error:", error);
+            }
+        }
+    };
+    
+
+
 
     useEffect(() => {
         axios.get("https://comanbe.onrender.com/api/events/")
             .then((response) => {
                 const allEvents = response.data;
                 setAllEvents(allEvents); // Lưu dữ liệu gốc
-                setFilteredEvents(allEvents); // Hiển thị ban đầu
+                setFilteredEvents(allEvents);
+                console.log(allEvents) // Hiển thị ban đầu
             })
             .catch((error) => {
                 console.error("Lỗi khi gọi API:", error);
@@ -25,7 +75,6 @@ const FeaturedEventsBannerAll = () => {
         { id: 2, name: "workshop" },
         { id: 3, name: "webinar" },
         { id: 4, name: "conference" },
-        { id: 5, name: "Khác" },
     ];
 
     // Lọc sự kiện khi searchQuery, selectedCategory, hoặc allEvents thay đổi
@@ -108,6 +157,8 @@ const FeaturedEventsBannerAll = () => {
                     >
                         Xóa bộ lọc
                     </button>
+
+
                 </div>
             ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -143,9 +194,17 @@ const FeaturedEventsBannerAll = () => {
                             </div>
                             <div className="px-5 py-3 bg-gray-50 border-t flex justify-between items-center">
                                 <span className="text-sm font-medium">{event.price}</span>
-                                <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors">
-                                    Đăng ký ngay
+                                <button
+                                    onClick={() => dangKiSuKien(event.id, setIsRegistered) } // Gọi hàm đăng ký sự kiện
+                                    
+                                    className={`px-4 py-2 text-sm font-medium rounded transition-colors ${isRegistered // Gọi lại isRegistered với event
+                                        ? "bg-red-500 text-white hover:bg-red-600"
+                                        : "bg-blue-600 text-white hover:bg-blue-700"
+                                        }`}
+                                >
+                                    {isRegistered ? "Đã đăng ký" : "Đăng ký ngay"}
                                 </button>
+
                             </div>
                         </div>
                     ))}

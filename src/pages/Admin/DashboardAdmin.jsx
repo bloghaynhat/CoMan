@@ -1,9 +1,11 @@
-import React from "react";
-
-const Dashboard = () => {
+import React, {useContext} from "react";
+import { UserContext } from "../../context/UserContext.jsx";
+const DashboardAdmin = () => {
+  const { user } = useContext(UserContext);
   return (
-    <div className="w-screen m-auto text-5xl">Đây là Dashboard của admin</div>
+    <div className="w-screen m-auto text-5xl">{user.access_token}
+    <p>12345</p></div>
   );
 };
 
-export default Dashboard;
+export default DashboardAdmin;

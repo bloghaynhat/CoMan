@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import FeaturedEventsBanner from "../components/FeaturedEventsBanner";
 import FeaturedEventsBannerAll from "../components/FeaturedEventsBannerAll";
-
+import DashboardAdmin from "./Admin/DashboardAdmin";
 const SuKien = () => {
 
 
@@ -12,9 +12,7 @@ const SuKien = () => {
       </blockquote>
       <FeaturedEventsBanner />
       <FeaturedEventsBannerAll />
-
-
-
+      <DashboardAdmin/>
     </div>
   );
 };
