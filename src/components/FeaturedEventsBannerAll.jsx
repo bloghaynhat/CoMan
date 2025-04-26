@@ -1,49 +1,30 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Search } from 'lucide-react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
+import EventCard from './EventCard.jsx';
+import SearchBar from './SearchBar.jsx';
+import CategoryFilter from './CategoryFilter.jsx';
+import NoEvents from './NoEvents.jsx';
 import axios from 'axios';
 import { UserContext } from "../context/UserContext.jsx";
 
 const FeaturedEventsBannerAll = () => {
     const { user } = useContext(UserContext);
+
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All"); // Mặc định là "Tất cả"
-    const [allEvents, setAllEvents] = useState([]); // Dữ liệu gốc
-    const [filteredEvents, setFilteredEvents] = useState([]);
-    const [registeredEvents, setRegisteredEvents] = useState([]); // Lưu các sự kiện đã đăng ký
-    const [isRegistered, setIsRegistered] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState("All");
+    const [allEvents, setAllEvents] = useState([]);
+    const [registeredEvents, setRegisteredEvents] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    // Fetch sự kiện đã đăng ký của user
-    useEffect(() => {
-        const fetchRegisteredEvents = async () => {
-            const accessToken = user.access_token;
+    const userSlug = useMemo(() => {
+        if (user?.first_name && user?.last_name) {
+            return (user.first_name + user.last_name)
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase();
+        }
+        return '';
+    }, [user]);
 
-            if (!accessToken) return;
-
-            try {
-                const response = await axios.get("https://comanbe.onrender.com/api/event-registers/", {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
-
-                let registeredIds = response.data.map((item) => item);
-
-                setRegisteredEvents(registeredIds); // Cập nhật lại danh sách sự kiện đã đăng ký
-
-            } catch (error) {
-                console.error("Lỗi khi lấy sự kiện đã đăng ký:", error);
-            }
-        };
-
-        fetchRegisteredEvents();
-    }, [user.access_token]);
-
-    useEffect(() => {
-        console.log("Các sự kiện đã đăng ký:", registeredEvents);
-    }, [registeredEvents]); // Theo dõi sự thay đổi của registeredEvents
-
-
-    // Chạy lại khi `user.access_token` thay đổi
     const categories = [
         { id: 1, name: "All" },
         { id: 2, name: "workshop" },
@@ -51,208 +32,151 @@ const FeaturedEventsBannerAll = () => {
         { id: 4, name: "conference" },
     ];
 
-    const handleEventAction = async (eventId, isRegistered) => {
-        const accessToken = user.access_token;
-        if (!accessToken) {
+    const fetchRegisteredEvents = async () => {
+        if (!user?.access_token) return;
+        setLoading(true);
+        try {
+            const { data } = await axios.get("https://comanbe.onrender.com/api/event-registers/", {
+                headers: { Authorization: `Bearer ${user.access_token}` },
+            });
+            const registered = data.filter(item => item.user === userSlug);
+            setRegisteredEvents(registered);
+        } catch (error) {
+            console.error("Lỗi lấy sự kiện đã đăng ký:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchAllEvents = async () => {
+        try {
+            const { data } = await axios.get("https://comanbe.onrender.com/api/events/");
+            setAllEvents(data);
+        } catch (error) {
+            console.error("Lỗi lấy sự kiện:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchAllEvents();
+    }, []);
+
+    useEffect(() => {
+        if (user?.access_token) {
+            fetchRegisteredEvents();
+        }
+    }, [user?.access_token]);
+
+    const handleEventAction = async (eventId, alreadyRegistered) => {
+        if (!user?.access_token) {
             alert("Bạn cần đăng nhập.");
             return;
         }
 
         try {
-            if (isRegistered) {
-                // TODO: Hủy đăng ký nếu bạn muốn làm phần này
+            if (alreadyRegistered) {
                 await axios.delete(
                     `https://comanbe.onrender.com/api/event-registers/${eventId}/`,
                     {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        }
+                        headers: { Authorization: `Bearer ${user.access_token}` },
                     }
-                )
-                alert("Xoa su kiện thành công!")
-
+                );
+                await fetchRegisteredEvents();
+                alert("Hủy đăng ký sự kiện thành công!");
             } else {
                 await axios.post(
                     "https://comanbe.onrender.com/api/event-registers/",
                     { event_id: eventId },
                     {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
+                        headers: { Authorization: `Bearer ${user.access_token}` },
                     }
-                    
                 );
+                await fetchRegisteredEvents();
                 alert("Đăng ký sự kiện thành công!");
-
-                // GỌI LẠI API để lấy danh sách mới
-                const response = await axios.get("https://comanbe.onrender.com/api/event-registers/", {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
-                setRegisteredEvents(response.data); // Cập nhật danh sách mới
             }
         } catch (error) {
-            console.error("Lỗi xử lý sự kiện:", error.response?.data || error);
-            alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
+            const errorMessage = error.response?.data?.detail;
+            // console.error("Lỗi xử lý sự kiện:", errorMessage || error);
+
+            if (errorMessage === "Bạn đã đăng ký sự kiện này rồi.") {
+                await fetchRegisteredEvents();
+                setTimeout(() => {
+                    // alert("Bạn đã đăng ký sự kiện này rồi.");
+                }, 100); //  Delay alert 1 nhịp cho React cập nhật UI
+            } else if (errorMessage === "Có lỗi xảy ra. Vui lòng thử lại sau.") {
+                // alert(errorMessage || "Có lỗi xảy ra. Vui lòng thử lại sau.");
+                await fetchRegisteredEvents();
+            }
         }
     };
-
-
-    // Lấy dữ liệu sự kiện từ API
-    useEffect(() => {
-        axios.get("https://comanbe.onrender.com/api/events/")
-            .then((response) => {
-                const allEvents = response.data;
-                setAllEvents(allEvents); // Lưu dữ liệu gốc
-                setFilteredEvents(allEvents); // Lưu dữ liệu để hiển thị
-            })
-            .catch((error) => {
-                console.error("Lỗi khi gọi API:", error);
-            });
-    }, []);
-
-    // Lọc sự kiện khi searchQuery, selectedCategory, hoặc allEvents thay đổi
-    useEffect(() => {
-        const filtered = allEvents.filter((event) => {
-            const matchesSearch =
-                searchQuery === "" ||
-                event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                event.location.toLowerCase().includes(searchQuery.toLowerCase());
-
-            const matchesCategory =
-                selectedCategory === "All" || event.category === selectedCategory;
-
-            return matchesSearch && matchesCategory;
-        });
-
-        setFilteredEvents(filtered);
-    }, [searchQuery, selectedCategory, allEvents]);
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
     };
 
-    const handleCategoryChange = (categoryId) => {
-        setSelectedCategory(categoryId);
+    const handleCategoryChange = (categoryName) => {
+        setSelectedCategory(categoryName);
     };
 
-    const formatDate = (dateString) => {
-        const options = { year: "numeric", month: "long", day: "numeric" };
-        return new Date(dateString).toLocaleDateString("vi-VN", options);
+    const resetFilters = () => {
+        setSearchQuery("");
+        setSelectedCategory("All");
     };
+
+    const filteredEvents = allEvents.filter((event) => {
+        const matchesSearch =
+            searchQuery === "" ||
+            event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event.location.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesCategory =
+            selectedCategory === "All" || event.category === selectedCategory;
+
+        return matchesSearch && matchesCategory;
+    });
+
+    if (!user) {
+        return <div>Loading user...</div>;
+    }
 
     return (
         <div className="max-w-8xl mx-auto px-4 py-8">
-            <blockquote className="border-l-4 border-blue-500 pl-4 italic">
-                <h2 className="text-2xl font-bold mb-6">Sự kiện</h2>
+            <blockquote className="border-l-4 border-blue-500 pl-4 italic mb-6">
+                <h2 className="text-2xl font-bold">Sự kiện</h2>
             </blockquote>
 
-            {/* Phần tìm kiếm và lọc */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                <div className="relative md:w-1/3">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm sự kiện..."
-                        className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                    />
-                </div>
-                <div className="flex flex-wrap gap-2">
-                    {categories.map((category) => (
-                        <button
-                            key={category.id}
-                            onClick={() => handleCategoryChange(category.name)}
-                            className={`px-4 py-2 rounded-md text-sm font-medium ${selectedCategory === category.name
-                                ? "bg-blue-600 text-white"
-                                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                                }`}
-                        >
-                            {category.name}
-                        </button>
-                    ))}
-                </div>
+            <div className="flex mb-3">
+                <SearchBar searchQuery={searchQuery} handleSearchChange={handleSearchChange} />
+                <CategoryFilter categories={categories} selectedCategory={selectedCategory} handleCategoryChange={handleCategoryChange} />
             </div>
 
-            {/* Hiển thị sự kiện */}
-            {filteredEvents.length === 0 ? (
-                <div className="text-center py-12 bg-gray-100 rounded-lg">
-                    <p className="text-gray-500 text-lg">Không tìm thấy sự kiện nào phù hợp với tìm kiếm của bạn.</p>
-                    <button
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                        onClick={() => {
-                            setSearchQuery("");
-                            setSelectedCategory(1);
-                        }}
-                    >
-                        Xóa bộ lọc
-                    </button>
-                </div>
+            {loading ? (
+                <div className="text-center py-10">Đang tải sự kiện...</div>
             ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredEvents.map((event) => {
-                        const registeredItem = registeredEvents.find(
-                            (eventRegistered) => eventRegistered.event === event.title
-                        );
-                        return (
-                            <div key={event.id} className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
-                                <div className="relative">
-                                    <img
-                                        src={event.image_url || "/placeholder.svg"}
-                                        alt={event.title}
-                                        className="w-full h-48 object-cover"
+                <>
+                    {filteredEvents.length === 0 ? (
+                        <NoEvents resetFilters={resetFilters} />
+                    ) : (
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredEvents.map((event) => {
+                                const registeredItem = registeredEvents.find(
+                                    (item) => item.event === event.title
+                                );
+                                return (
+                                    <EventCard
+                                        key={event.id}
+                                        event={event}
+                                        registeredItem={registeredItem}
+                                        handleEventAction={handleEventAction}
+                                        categories={categories}
+                                        loading={loading}
                                     />
-                                    <div className="absolute top-0 right-0 mt-2 mr-2">
-                                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
-                                            {categories.find((cat) => cat.id === event.categoryId)?.name || event.category}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="p-5 flex-grow">
-                                    <h3 className="text-lg font-bold mb-2">{event.title}</h3>
-                                    <div className="flex items-center text-gray-600 mb-2">
-                                        <i className="fas fa-calendar-alt mr-1"></i>
-                                        <span className="text-sm">{formatDate(event.date)}</span>
-                                    </div>
-                                    <div className="flex items-center text-gray-600 mb-2">
-                                        <i className="fas fa-clock mr-1"></i>
-                                        <span className="text-sm">{event.time}</span>
-                                    </div>
-                                    <div className="flex items-center text-gray-600 mb-3">
-                                        <i className="fas fa-map-marker-alt mr-1"></i>
-                                        <span className="text-sm">{event.location}</span>
-                                    </div>
-                                    <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-                                </div>
-                                <div className="px-5 py-3 bg-gray-50 border-t flex justify-between items-center">
-                                    <span className="text-sm font-medium">{event.price}</span>
-
-                                    {registeredItem ? (
-                                        <button
-                                            className="px-4 py-2 text-sm font-medium rounded transition-colors bg-red-500 text-white hover:bg-red-600"
-                                            onClick={() => handleEventAction(registeredItem.id, true)}
-                                        >
-                                            Hủy đăng ký
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className="px-4 py-2 text-sm font-medium rounded transition-colors bg-blue-600 text-white hover:bg-blue-700"
-                                            onClick={() => handleEventAction(event.id, false)}
-                                        >
-                                            Đăng ký ngay
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-
-                </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
