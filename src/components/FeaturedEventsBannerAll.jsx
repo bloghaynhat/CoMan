@@ -2,80 +2,115 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Search } from 'lucide-react';
 import axios from 'axios';
 import { UserContext } from "../context/UserContext.jsx";
+
 const FeaturedEventsBannerAll = () => {
     const { user } = useContext(UserContext);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All"); // Mặc định là "Tất cả"
     const [allEvents, setAllEvents] = useState([]); // Dữ liệu gốc
     const [filteredEvents, setFilteredEvents] = useState([]);
-    const [allEventsRegister, setAllEventsRegister] = useState([]); // Dữ liệu gốc
+    const [registeredEvents, setRegisteredEvents] = useState([]); // Lưu các sự kiện đã đăng ký
     const [isRegistered, setIsRegistered] = useState(false);
 
+    // Fetch sự kiện đã đăng ký của user
+    useEffect(() => {
+        const fetchRegisteredEvents = async () => {
+            const accessToken = user.access_token;
 
-    const dangKiSuKien = async (eventId, setIsRegistered) => {
-        const accessToken = user.access_token; // Lấy access token từ context
-        console.log(accessToken);
-    
-        if (!accessToken) {
-            alert("Bạn cần đăng nhập để đăng ký sự kiện.");
-            return;
-        }
-    
-        try {
-            const response = await axios.post(
-                "https://comanbe.onrender.com/api/event-registers/",
-                {
-                    event_id: eventId, // Gửi ID của sự kiện
-                },
-                {
+            if (!accessToken) return;
+
+            try {
+                const response = await axios.get("https://comanbe.onrender.com/api/event-registers/", {
                     headers: {
-                        Authorization: `Bearer ${accessToken}`, // Sử dụng access token trong header
+                        Authorization: `Bearer ${accessToken}`,
                     },
-                }
-            );
-    
-            console.log(response.data); // In ra phản hồi để kiểm tra
-            alert("Đăng ký sự kiện thành công!");
-            setIsRegistered(true); // Cập nhật trạng thái UI, nếu bạn dùng state
-        } catch (error) {
-            if (error.response) {
-                // In ra lỗi chi tiết để kiểm tra
-                console.error("Error response:", error.response.data);
-    
-                if (error.response.data.detail === "Bạn đã đăng ký sự kiện này rồi.") {
-                    alert("Bạn đã đăng ký sự kiện này rồi.");
-                } else {
-                    alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
-                }
-            } else {
-                alert("Lỗi kết nối. Vui lòng thử lại.");
-                console.error("Connection error:", error);
+                });
+
+                let registeredIds = response.data.map((item) => item);
+
+                setRegisteredEvents(registeredIds); // Cập nhật lại danh sách sự kiện đã đăng ký
+
+            } catch (error) {
+                console.error("Lỗi khi lấy sự kiện đã đăng ký:", error);
             }
-        }
-    };
-    
+        };
 
-
+        fetchRegisteredEvents();
+    }, [user.access_token]);
 
     useEffect(() => {
-        axios.get("https://comanbe.onrender.com/api/events/")
-            .then((response) => {
-                const allEvents = response.data;
-                setAllEvents(allEvents); // Lưu dữ liệu gốc
-                setFilteredEvents(allEvents);
-                console.log(allEvents) // Hiển thị ban đầu
-            })
-            .catch((error) => {
-                console.error("Lỗi khi gọi API:", error);
-            });
-    }, []);
+        console.log("Các sự kiện đã đăng ký:", registeredEvents);
+    }, [registeredEvents]); // Theo dõi sự thay đổi của registeredEvents
 
+
+    // Chạy lại khi `user.access_token` thay đổi
     const categories = [
         { id: 1, name: "All" },
         { id: 2, name: "workshop" },
         { id: 3, name: "webinar" },
         { id: 4, name: "conference" },
     ];
+
+    const handleEventAction = async (eventId, isRegistered) => {
+        const accessToken = user.access_token;
+        if (!accessToken) {
+            alert("Bạn cần đăng nhập.");
+            return;
+        }
+
+        try {
+            if (isRegistered) {
+                // TODO: Hủy đăng ký nếu bạn muốn làm phần này
+                await axios.delete(
+                    `https://comanbe.onrender.com/api/event-registers/${eventId}/`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }
+                )
+                alert("Xoa su kiện thành công!")
+
+            } else {
+                await axios.post(
+                    "https://comanbe.onrender.com/api/event-registers/",
+                    { event_id: eventId },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    }
+                    
+                );
+                alert("Đăng ký sự kiện thành công!");
+
+                // GỌI LẠI API để lấy danh sách mới
+                const response = await axios.get("https://comanbe.onrender.com/api/event-registers/", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                setRegisteredEvents(response.data); // Cập nhật danh sách mới
+            }
+        } catch (error) {
+            console.error("Lỗi xử lý sự kiện:", error.response?.data || error);
+            alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
+        }
+    };
+
+
+    // Lấy dữ liệu sự kiện từ API
+    useEffect(() => {
+        axios.get("https://comanbe.onrender.com/api/events/")
+            .then((response) => {
+                const allEvents = response.data;
+                setAllEvents(allEvents); // Lưu dữ liệu gốc
+                setFilteredEvents(allEvents); // Lưu dữ liệu để hiển thị
+            })
+            .catch((error) => {
+                console.error("Lỗi khi gọi API:", error);
+            });
+    }, []);
 
     // Lọc sự kiện khi searchQuery, selectedCategory, hoặc allEvents thay đổi
     useEffect(() => {
@@ -157,57 +192,66 @@ const FeaturedEventsBannerAll = () => {
                     >
                         Xóa bộ lọc
                     </button>
-
-
                 </div>
             ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredEvents.map((event) => (
-                        <div key={event.id} className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
-                            <div className="relative">
-                                <img
-                                    src={event.image_url || "/placeholder.svg"}
-                                    alt={event.title}
-                                    className="w-full h-48 object-cover"
-                                />
-                                <div className="absolute top-0 right-0 mt-2 mr-2">
-                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
-                                        {categories.find((cat) => cat.id === event.categoryId)?.name || event.category}
-                                    </span>
+                    {filteredEvents.map((event) => {
+                        const registeredItem = registeredEvents.find(
+                            (eventRegistered) => eventRegistered.event === event.title
+                        );
+                        return (
+                            <div key={event.id} className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
+                                <div className="relative">
+                                    <img
+                                        src={event.image_url || "/placeholder.svg"}
+                                        alt={event.title}
+                                        className="w-full h-48 object-cover"
+                                    />
+                                    <div className="absolute top-0 right-0 mt-2 mr-2">
+                                        <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
+                                            {categories.find((cat) => cat.id === event.categoryId)?.name || event.category}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="p-5 flex-grow">
-                                <h3 className="text-lg font-bold mb-2">{event.title}</h3>
-                                <div className="flex items-center text-gray-600 mb-2">
-                                    <i className="fas fa-calendar-alt mr-1"></i>
-                                    <span className="text-sm">{formatDate(event.date)}</span>
+                                <div className="p-5 flex-grow">
+                                    <h3 className="text-lg font-bold mb-2">{event.title}</h3>
+                                    <div className="flex items-center text-gray-600 mb-2">
+                                        <i className="fas fa-calendar-alt mr-1"></i>
+                                        <span className="text-sm">{formatDate(event.date)}</span>
+                                    </div>
+                                    <div className="flex items-center text-gray-600 mb-2">
+                                        <i className="fas fa-clock mr-1"></i>
+                                        <span className="text-sm">{event.time}</span>
+                                    </div>
+                                    <div className="flex items-center text-gray-600 mb-3">
+                                        <i className="fas fa-map-marker-alt mr-1"></i>
+                                        <span className="text-sm">{event.location}</span>
+                                    </div>
+                                    <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
                                 </div>
-                                <div className="flex items-center text-gray-600 mb-2">
-                                    <i className="fas fa-clock mr-1"></i>
-                                    <span className="text-sm">{event.time}</span>
-                                </div>
-                                <div className="flex items-center text-gray-600 mb-3">
-                                    <i className="fas fa-map-marker-alt mr-1"></i>
-                                    <span className="text-sm">{event.location}</span>
-                                </div>
-                                <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-                            </div>
-                            <div className="px-5 py-3 bg-gray-50 border-t flex justify-between items-center">
-                                <span className="text-sm font-medium">{event.price}</span>
-                                <button
-                                    onClick={() => dangKiSuKien(event.id, setIsRegistered) } // Gọi hàm đăng ký sự kiện
-                                    
-                                    className={`px-4 py-2 text-sm font-medium rounded transition-colors ${isRegistered // Gọi lại isRegistered với event
-                                        ? "bg-red-500 text-white hover:bg-red-600"
-                                        : "bg-blue-600 text-white hover:bg-blue-700"
-                                        }`}
-                                >
-                                    {isRegistered ? "Đã đăng ký" : "Đăng ký ngay"}
-                                </button>
+                                <div className="px-5 py-3 bg-gray-50 border-t flex justify-between items-center">
+                                    <span className="text-sm font-medium">{event.price}</span>
 
+                                    {registeredItem ? (
+                                        <button
+                                            className="px-4 py-2 text-sm font-medium rounded transition-colors bg-red-500 text-white hover:bg-red-600"
+                                            onClick={() => handleEventAction(registeredItem.id, true)}
+                                        >
+                                            Hủy đăng ký
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="px-4 py-2 text-sm font-medium rounded transition-colors bg-blue-600 text-white hover:bg-blue-700"
+                                            onClick={() => handleEventAction(event.id, false)}
+                                        >
+                                            Đăng ký ngay
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
+
                 </div>
             )}
         </div>
