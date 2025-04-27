@@ -15,6 +15,7 @@ const FeaturedEventsBanner = () => {
   const XemChiTiet = (id) => {
     const event = events.find((e) => e.id === id)
     setSelectedEvent(event)
+    console.log(event)
   }
 
 
@@ -23,10 +24,7 @@ const FeaturedEventsBanner = () => {
       .then((response) => {
         const allEvents = response.data;
         // Cập nhật state với dữ liệu từ API
-        setEvents(allEvents);
-
-              
-        
+        setEvents(allEvents);  
       })
       .catch((error) => {
         console.error("Lỗi khi gọi API:", error);

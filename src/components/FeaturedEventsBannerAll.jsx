@@ -14,6 +14,7 @@ const FeaturedEventsBannerAll = () => {
     const [allEvents, setAllEvents] = useState([]);
     const [registeredEvents, setRegisteredEvents] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingEventId, setLoadingEventId] = useState(null); // New: loading riêng từng nút
 
     const userSlug = useMemo(() => {
         if (user?.first_name && user?.last_name) {
@@ -34,7 +35,6 @@ const FeaturedEventsBannerAll = () => {
 
     const fetchRegisteredEvents = async () => {
         if (!user?.access_token) return;
-        setLoading(true);
         try {
             const { data } = await axios.get("https://comanbe.onrender.com/api/event-registers/", {
                 headers: { Authorization: `Bearer ${user.access_token}` },
@@ -43,8 +43,6 @@ const FeaturedEventsBannerAll = () => {
             setRegisteredEvents(registered);
         } catch (error) {
             console.error("Lỗi lấy sự kiện đã đăng ký:", error);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -73,6 +71,8 @@ const FeaturedEventsBannerAll = () => {
             return;
         }
 
+        setLoadingEventId(eventId);
+
         try {
             if (alreadyRegistered) {
                 await axios.delete(
@@ -81,8 +81,6 @@ const FeaturedEventsBannerAll = () => {
                         headers: { Authorization: `Bearer ${user.access_token}` },
                     }
                 );
-                await fetchRegisteredEvents();
-                alert("Hủy đăng ký sự kiện thành công!");
             } else {
                 await axios.post(
                     "https://comanbe.onrender.com/api/event-registers/",
@@ -91,33 +89,18 @@ const FeaturedEventsBannerAll = () => {
                         headers: { Authorization: `Bearer ${user.access_token}` },
                     }
                 );
-                await fetchRegisteredEvents();
-                alert("Đăng ký sự kiện thành công!");
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.detail;
-            // console.error("Lỗi xử lý sự kiện:", errorMessage || error);
-
-            if (errorMessage === "Bạn đã đăng ký sự kiện này rồi.") {
-                await fetchRegisteredEvents();
-                setTimeout(() => {
-                    // alert("Bạn đã đăng ký sự kiện này rồi.");
-                }, 100); //  Delay alert 1 nhịp cho React cập nhật UI
-            } else if (errorMessage === "Có lỗi xảy ra. Vui lòng thử lại sau.") {
-                // alert(errorMessage || "Có lỗi xảy ra. Vui lòng thử lại sau.");
-                await fetchRegisteredEvents();
-            }
+            console.error("Lỗi xử lý sự kiện (có thể bỏ qua nếu đã đăng ký):", error.response?.data?.detail || error);
+        } finally {
+            // Dù lỗi hay thành công đều fetch lại
+            await fetchRegisteredEvents();
+            setLoadingEventId(null);
         }
     };
 
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
-    };
-
-    const handleCategoryChange = (categoryName) => {
-        setSelectedCategory(categoryName);
-    };
-
+    const handleSearchChange = (e) => setSearchQuery(e.target.value);
+    const handleCategoryChange = (categoryName) => setSelectedCategory(categoryName);
     const resetFilters = () => {
         setSearchQuery("");
         setSelectedCategory("All");
@@ -135,10 +118,6 @@ const FeaturedEventsBannerAll = () => {
 
         return matchesSearch && matchesCategory;
     });
-
-    if (!user) {
-        return <div>Loading user...</div>;
-    }
 
     return (
         <div className="max-w-8xl mx-auto px-4 py-8">
@@ -169,8 +148,7 @@ const FeaturedEventsBannerAll = () => {
                                         event={event}
                                         registeredItem={registeredItem}
                                         handleEventAction={handleEventAction}
-                                        categories={categories}
-                                        loading={loading}
+                                        loadingEventId={loadingEventId}
                                     />
                                 );
                             })}
