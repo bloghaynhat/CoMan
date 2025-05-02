@@ -32,30 +32,8 @@ const FeaturedEventsBannerAll = () => {
         { id: 3, name: "webinar" },
         { id: 4, name: "conference" },
     ];
-    // Ham deletedelete
 
-    const deleteEvent = async (eventId) => {
-        const token = user.access_token;  // Thay thế bằng access token
-        try {
-            const response = await axios.delete(`https://comanbe.onrender.com/api/event-registers/${eventId}/`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,  // Thêm token vào header
-                }
-            });
-            console.log('Sự kiện đã được xóa:', response.data);
-        } catch (error) {
-            if (error.response) {
-                // Lỗi từ server (ví dụ: 401, 403, 404)
-                console.error('Lỗi server:', error.response.data);
-            } else if (error.request) {
-                // Lỗi yêu cầu gửi đi mà không nhận được phản hồi
-                console.error('Lỗi yêu cầu:', error.request);
-            } else {
-                // Lỗi khác
-                console.error('Lỗi không xác định:', error.message);
-            }
-        }
-    };
+    
     const fetchRegisteredEvents = async () => {
         if (!user?.access_token) return;
         try {
@@ -97,13 +75,16 @@ const FeaturedEventsBannerAll = () => {
             alert("Bạn cần đăng nhập.");
             return;
         }
-
+    
         setLoadingEventId(eventId);
-        // const evt = registeredEvents.find(item => item.id === eventId);
-
+    
         try {
             if (alreadyRegistered) {
-                deleteEvent(eventId);
+                await axios.delete(`https://comanbe.onrender.com/api/event-registers/cancel/${eventId}/`, {
+                    headers: {
+                      Authorization: `Bearer ${user.access_token}`,
+                    }
+                  });
             } else {
                 await axios.post(
                     "https://comanbe.onrender.com/api/event-registers/",
@@ -112,18 +93,16 @@ const FeaturedEventsBannerAll = () => {
                         headers: { Authorization: `Bearer ${user.access_token}` },
                     }
                 );
-
-
             }
         } catch (error) {
-            console.error("Lỗi xử lý sự kiện (có thể bỏ qua nếu đã đăng ký):", error.response?.data?.detail || error);
+            console.error("Lỗi xử lý sự kiện:", error.response?.data?.detail || error);
         } finally {
-            // Dù lỗi hay thành công đều fetch lại
             await fetchRegisteredEvents();
+            alert(alreadyRegistered ? "Đã hủy đăng ký!" : "Đăng ký thành công!");
             setLoadingEventId(null);
         }
     };
-
+    
     const handleSearchChange = (e) => setSearchQuery(e.target.value);
     const handleCategoryChange = (categoryName) => setSelectedCategory(categoryName);
     const resetFilters = () => {
@@ -172,7 +151,7 @@ const FeaturedEventsBannerAll = () => {
                                         key={event.id}
                                         event={event}
                                         registeredItem={registeredItem}
-                                        handleEventAction={handleEventAction}
+                                        handleEventAction={() => handleEventAction(event.id, !!registeredItem)}
                                         loadingEventId={loadingEventId}
                                     />
                                 );
