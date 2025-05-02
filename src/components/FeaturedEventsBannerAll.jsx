@@ -32,7 +32,30 @@ const FeaturedEventsBannerAll = () => {
         { id: 3, name: "webinar" },
         { id: 4, name: "conference" },
     ];
+    // Ham deletedelete
 
+    const deleteEvent = async (eventId) => {
+        const token = user.access_token;  // Thay thế bằng access token
+        try {
+            const response = await axios.delete(`https://comanbe.onrender.com/api/event-registers/${eventId}/`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,  // Thêm token vào header
+                }
+            });
+            console.log('Sự kiện đã được xóa:', response.data);
+        } catch (error) {
+            if (error.response) {
+                // Lỗi từ server (ví dụ: 401, 403, 404)
+                console.error('Lỗi server:', error.response.data);
+            } else if (error.request) {
+                // Lỗi yêu cầu gửi đi mà không nhận được phản hồi
+                console.error('Lỗi yêu cầu:', error.request);
+            } else {
+                // Lỗi khác
+                console.error('Lỗi không xác định:', error.message);
+            }
+        }
+    };
     const fetchRegisteredEvents = async () => {
         if (!user?.access_token) return;
         try {
@@ -41,6 +64,7 @@ const FeaturedEventsBannerAll = () => {
             });
             const registered = data.filter(item => item.user === userSlug);
             setRegisteredEvents(registered);
+            console.log("Sự kiện đã đăng ký:", registered);
         } catch (error) {
             console.error("Lỗi lấy sự kiện đã đăng ký:", error);
         }
@@ -65,6 +89,9 @@ const FeaturedEventsBannerAll = () => {
         }
     }, [user?.access_token]);
 
+
+    // ham tim ra su kien khi click
+
     const handleEventAction = async (eventId, alreadyRegistered) => {
         if (!user?.access_token) {
             alert("Bạn cần đăng nhập.");
@@ -72,15 +99,11 @@ const FeaturedEventsBannerAll = () => {
         }
 
         setLoadingEventId(eventId);
+        // const evt = registeredEvents.find(item => item.id === eventId);
 
         try {
             if (alreadyRegistered) {
-                await axios.delete(
-                    `https://comanbe.onrender.com/api/event-registers/${eventId}/`,
-                    {
-                        headers: { Authorization: `Bearer ${user.access_token}` },
-                    }
-                );
+                deleteEvent(eventId);
             } else {
                 await axios.post(
                     "https://comanbe.onrender.com/api/event-registers/",
@@ -89,6 +112,8 @@ const FeaturedEventsBannerAll = () => {
                         headers: { Authorization: `Bearer ${user.access_token}` },
                     }
                 );
+
+
             }
         } catch (error) {
             console.error("Lỗi xử lý sự kiện (có thể bỏ qua nếu đã đăng ký):", error.response?.data?.detail || error);
