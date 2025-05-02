@@ -3,25 +3,31 @@ import { useParams, useNavigate, useLocation } from "react-router-dom"
 
 const CourseDetail = () => {
     const { id } = useParams()
+    const { state } = useLocation()
+    const isPaid = state?.isPaid || false
+    console.log(id);
+    console.log(isPaid)
+
     const location = useLocation()
-    const { type } = location.state || {}
     const navigate = useNavigate()
     const [course, setCourse] = useState(null)
     const [loading, setLoading] = useState(true)
-    console.log("Course ID:", id)
-    console.log("Course Type:", type)
+
 
     useEffect(() => {
         const fetchCourse = async () => {
             try {
                 let url = ""
 
-                if (type === "free") {
-                    url = `https://67d0f74e825945773eb276c8.mockapi.io/CourseDetails/${id}`
-                } else if (type === "paid") {
+                if (isPaid) {
+                    console.log("Paid course");
                     url = `https://67d0f74e825945773eb276c8.mockapi.io/PaidCourse/${id}`
+
+                } else if (!isPaid) {
+                    console.log("Free course");
+                    url = `https://67d0f74e825945773eb276c8.mockapi.io/CourseDetails/${id}`
                 } else {
-                    throw new Error("Type không hợp lệ hoặc không có!")
+                    throw new Error("ID hoặc isPaid không hợp lệ")
                 }
 
                 const response = await fetch(url)
@@ -34,10 +40,10 @@ const CourseDetail = () => {
             }
         }
 
-        if (id && type) {
+        if (id && isPaid) {
             fetchCourse()
         }
-    }, [id, type])
+    }, [id, isPaid])
 
     const handleClose = () => {
         navigate(-1)
@@ -45,6 +51,7 @@ const CourseDetail = () => {
 
     if (loading) {
         return (
+
             <div className="container mx-auto p-4 md:p-6 max-w-5xl relative bg-white rounded-xl shadow-lg">
                 <button
                     onClick={handleClose}
@@ -60,7 +67,7 @@ const CourseDetail = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-
+                {/*Skeleton loading*/}
                 <div className="animate-pulse">
                     <div className="h-8 bg-gray-200 w-2/3 mb-6 rounded-md"></div>
                     <div className="h-72 md:h-96 bg-gray-200 mb-8 rounded-lg w-full"></div>
@@ -161,8 +168,11 @@ const CourseDetail = () => {
         return stars
     }
 
+    {/*Skeleton loading === END */ }
+
+
     const themeColors =
-        course.type === "paid"
+        isPaid
             ? {
                 primary: "indigo",
                 secondary: "purple",
@@ -212,12 +222,12 @@ const CourseDetail = () => {
 
                     <div className="absolute top-4 left-4">
                         <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${course.type === "paid"
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${isPaid
                                 ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
                                 : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
                                 }`}
                         >
-                            {course.type === "paid" ? "Premium" : "Free"}
+                            {isPaid ? "Premium" : "Free"}
                         </span>
                     </div>
                 </div>
@@ -393,13 +403,13 @@ const CourseDetail = () => {
                 )}
             </div>
 
-            {course.type === "paid" && (
+            {isPaid && (
                 <div
                     className={`bg-gradient-to-r from-${themeColors.primary}-500 to-${themeColors.secondary}-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg`}
                 >
                     <div>
                         <p className="text-white/80 mb-1">Course Price:</p>
-                        <p className="text-3xl font-bold">{course.price.toLocaleString()} VNĐ</p>
+                        <p className="text-3xl font-bold">{course.price} VNĐ</p>
                     </div>
                     <button
                         className={`mt-4 md:mt-0 px-8 py-3 bg-white text-${themeColors.primary}-600 rounded-lg hover:bg-${themeColors.primary}-50 transition-colors duration-300 font-medium shadow-md`}

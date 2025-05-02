@@ -1,13 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const CourseCard = ({ course, type }) => {
+const CourseCard = ({ course }) => {
   return (
     <Link
       to={`/course/${course.id}`}
-      state={{ type }}
-    >
-      <div className="flex-shrink-0 w-64 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+      state={{ isPaid: course.is_paid }}
+    >      <div className="flex-shrink-0 w-80 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
         <img
           src={course.image}
           alt={course.title}
@@ -27,7 +26,7 @@ const CourseCard = ({ course, type }) => {
               {course.price.toLocaleString()} VNĐ
             </p>
           )}
-          
+
           {!course.is_paid && (
             <p className="mt-2 text-green-600 font-semibold">Miễn phí</p>
           )}
