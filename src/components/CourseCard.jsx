@@ -5,7 +5,6 @@ const CourseCard = ({ course }) => {
   return (
     <Link
       to={`/course/${course.id}`}
-      state={{ isPaid: course.is_paid }}
     >      <div className="flex-shrink-0 w-80 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
         <img
           src={course.image}

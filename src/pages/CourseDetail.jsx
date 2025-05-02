@@ -1,57 +1,105 @@
+"use client"
+
 import { useEffect, useState } from "react"
-import { useParams, useNavigate, useLocation } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 
 const CourseDetail = () => {
     const { id } = useParams()
-    const { state } = useLocation()
-    const isPaid = state?.isPaid || false
-    console.log(id);
-    console.log(isPaid)
-
-    const location = useLocation()
     const navigate = useNavigate()
     const [course, setCourse] = useState(null)
+    const [sections, setSections] = useState([])
+    const [lessons, setLessons] = useState([])
     const [loading, setLoading] = useState(true)
+    const [activeSection, setActiveSection] = useState(null)
 
-
+    // Fetch course details
     useEffect(() => {
         const fetchCourse = async () => {
             try {
-                let url = ""
-
-                if (isPaid) {
-                    console.log("Paid course");
-                    url = `https://67d0f74e825945773eb276c8.mockapi.io/PaidCourse/${id}`
-
-                } else if (!isPaid) {
-                    console.log("Free course");
-                    url = `https://67d0f74e825945773eb276c8.mockapi.io/CourseDetails/${id}`
-                } else {
-                    throw new Error("ID hoặc isPaid không hợp lệ")
-                }
-
-                const response = await fetch(url)
-                const data = await response.json()
+                setLoading(true)
+                const res = await fetch(`https://comanbe.onrender.com/api/courses/${id}`)
+                const data = await res.json()
                 setCourse(data)
             } catch (error) {
-                console.error("Lỗi khi fetch course:", error)
-            } finally {
+                console.error("Failed to fetch course:", error)
+            }
+        }
+
+        fetchCourse()
+    }, [id])
+
+    // Fetch sections by course id
+    useEffect(() => {
+        const fetchSections = async () => {
+            try {
+                const res = await fetch(`https://comanbe.onrender.com/api/sections?course=${course.id}`);
+                const data = await res.json();
+                setSections(data);
+            } catch (error) {
+                console.error("Failed to fetch sections:", error);
+            }
+        };
+
+        if (course && course.id) {
+            fetchSections();
+        }
+    }, [course]); // Chỉ chạy khi course đã có dữ liệu
+
+
+    // Fetch lessons by section id
+    const [hasFetchedLessons, setHasFetchedLessons] = useState(false)
+
+    useEffect(() => {
+        const fetchLessons = async () => {
+            if (hasFetchedLessons || sections.length === 0) return
+
+            try {
+                const sectionIds = sections.map(section => section.id)
+                console.log("Fetching lessons for section IDs:", sectionIds.join(", "))
+
+                const allLessons = []
+
+                for (const sectionId of sectionIds) {
+                    const res = await fetch(`https://comanbe.onrender.com/api/lessons?section=${sectionId}`)
+                    const data = await res.json()
+                    allLessons.push(...data)
+                }
+
+                setLessons(allLessons)
+                setHasFetchedLessons(true)
+                setLoading(false)
+            } catch (error) {
+                console.error("Failed to fetch lessons:", error)
                 setLoading(false)
             }
         }
 
-        if (id && isPaid) {
-            fetchCourse()
-        }
-    }, [id, isPaid])
+        fetchLessons()
+    }, [sections, hasFetchedLessons])
+
+
+    const sectionIds = sections.map(section => section.id)
+    console.log("Fetching lessons for section IDs:", sectionIds.join(", "));
+
+
+
 
     const handleClose = () => {
         navigate(-1)
     }
 
+    // Get lessons for a specific section
+    const getLessonsForSection = (sectionId) => {
+        return lessons.filter((lesson) => lesson.section_id === sectionId)
+    }
+
+    // Toggle section visibility
+    const toggleSection = (sectionId) => {
+        setActiveSection(activeSection === sectionId ? null : sectionId)
+    }
+
     if (loading) {
         return (
-
             <div className="container mx-auto p-4 md:p-6 max-w-5xl relative bg-white rounded-xl shadow-lg">
                 <button
                     onClick={handleClose}
@@ -82,12 +130,27 @@ const CourseDetail = () => {
                         <div className="h-4 bg-gray-200 rounded-md w-4/6"></div>
                     </div>
 
+                    {/* Section skeleton */}
                     <div className="h-6 bg-gray-200 w-40 mb-4 rounded-md"></div>
 
-                    <div className="space-y-2 mb-8 pl-5">
-                        <div className="h-4 bg-gray-200 rounded-md w-3/4"></div>
-                        <div className="h-4 bg-gray-200 rounded-md w-2/3"></div>
-                        <div className="h-4 bg-gray-200 rounded-md w-4/5"></div>
+                    {/* Course content skeleton - sections */}
+                    <div className="space-y-4 mb-8">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                                <div className="h-12 bg-gray-200 p-4 flex justify-between items-center">
+                                    <div className="h-4 bg-gray-300 rounded w-1/3"></div>
+                                    <div className="h-4 bg-gray-300 rounded w-8"></div>
+                                </div>
+                                <div className="p-4 space-y-3">
+                                    {[1, 2, 3].map((j) => (
+                                        <div key={j} className="flex items-center gap-3">
+                                            <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
+                                            <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     <div className="h-8 bg-gray-200 w-48 rounded-md mt-6"></div>
@@ -168,23 +231,26 @@ const CourseDetail = () => {
         return stars
     }
 
-    {/*Skeleton loading === END */ }
+    // Determine if course is paid
+    const isPaid = course.price && course.price > 0
 
+    // Define theme colors based on course type
+    const themeColors = isPaid
+        ? {
+            primary: "indigo",
+            secondary: "purple",
+            accent: "pink",
+            light: "violet",
+        }
+        : {
+            primary: "emerald",
+            secondary: "teal",
+            accent: "cyan",
+            light: "sky",
+        }
 
-    const themeColors =
-        isPaid
-            ? {
-                primary: "indigo",
-                secondary: "purple",
-                accent: "pink",
-                light: "violet",
-            }
-            : {
-                primary: "emerald",
-                secondary: "teal",
-                accent: "cyan",
-                light: "sky",
-            }
+    // Calculate total lessons
+    const totalLessons = lessons.length
 
     return (
         <div
@@ -250,7 +316,7 @@ const CourseDetail = () => {
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                             />
                         </svg>
-                        <span className="font-medium">{course.instructor}</span>
+                        <span className="font-medium">{course.instructor || "Instructor"}</span>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -268,13 +334,15 @@ const CourseDetail = () => {
                                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                             />
                         </svg>
-                        <span>{course.lessons} lessons</span>
+                        <span>{totalLessons} lessons</span>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                        <div className="flex">{renderRating(course.rating)}</div>
-                        <span className="ml-1">({course.rating})</span>
-                    </div>
+                    {course.rating && (
+                        <div className="flex items-center gap-1">
+                            <div className="flex">{renderRating(course.rating)}</div>
+                            <span className="ml-1">({course.rating})</span>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -361,6 +429,7 @@ const CourseDetail = () => {
                 )}
             </div>
 
+            {/* Course Content - Sections and Lessons */}
             <div className="mb-8">
                 <div
                     className={`flex items-center mb-4 bg-${themeColors.accent}-50 p-3 rounded-t-lg border-b-2 border-${themeColors.accent}-200`}
@@ -375,30 +444,150 @@ const CourseDetail = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                     </svg>
                     <h3 className={`text-xl font-semibold text-${themeColors.accent}-800`}>Course Content</h3>
+                    <span className="ml-auto text-sm text-gray-500">
+                        {sections.length} sections • {totalLessons} lessons
+                    </span>
                 </div>
 
-                {course.content && course.content.length > 0 ? (
+                {sections.length > 0 ? (
                     <div className="bg-white rounded-b-lg overflow-hidden shadow-md">
-                        {course.content.map((item, index) => (
-                            <div
-                                key={index}
-                                className={`p-4 flex items-center ${index !== course.content.length - 1 ? `border-b border-${themeColors.accent}-50` : ""
-                                    } hover:bg-${themeColors.accent}-50 transition-colors duration-200`}
-                            >
-                                <span
-                                    className={`w-8 h-8 flex items-center justify-center bg-${themeColors.accent}-100 text-${themeColors.accent}-700 rounded-full mr-3 font-medium`}
-                                >
-                                    {index + 1}
-                                </span>
-                                <span className="text-gray-700">{item}</span>
-                            </div>
-                        ))}
+                        {sections.map((section) => {
+                            const sectionLessons = getLessonsForSection(section.id)
+                            return (
+                                <div key={section.id} className="border-b border-gray-100 last:border-b-0">
+                                    <div
+                                        className={`p-4 flex justify-between items-center cursor-pointer hover:bg-${themeColors.light}-50 transition-colors duration-200`}
+                                        onClick={() => toggleSection(section.id)}
+                                    >
+                                        <div className="flex items-center">
+                                            <span
+                                                className={`w-8 h-8 flex items-center justify-center bg-${themeColors.primary}-100 text-${themeColors.primary}-700 rounded-full mr-3 font-medium`}
+                                            >
+                                                {section.order || "•"}
+                                            </span>
+                                            <h4 className="font-medium text-gray-800">{section.title}</h4>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm text-gray-500">{sectionLessons.length} lessons</span>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`h-5 w-5 transition-transform duration-200 ${activeSection === section.id ? "transform rotate-180" : ""
+                                                    }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    {/* Lessons for this section */}
+                                    {activeSection === section.id && (
+                                        <div className="bg-gray-50 p-4 space-y-2">
+                                            {sectionLessons.length > 0 ? (
+                                                sectionLessons.map((lesson) => (
+                                                    <div
+                                                        key={lesson.id}
+                                                        className={`flex items-start p-3 rounded-md hover:bg-${themeColors.light}-100 transition-colors duration-200`}
+                                                    >
+                                                        <div className="flex-shrink-0 mr-3">
+                                                            {lesson.type === "video" ? (
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    className={`h-5 w-5 text-${themeColors.accent}-500`}
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={2}
+                                                                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                                                    />
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={2}
+                                                                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                                    />
+                                                                </svg>
+                                                            ) : lesson.type === "quiz" ? (
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    className={`h-5 w-5 text-${themeColors.secondary}-500`}
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={2}
+                                                                        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                                    />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    className={`h-5 w-5 text-${themeColors.primary}-500`}
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={2}
+                                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                                                    />
+                                                                </svg>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-grow">
+                                                            <h5 className="text-gray-800">{lesson.title}</h5>
+                                                            {lesson.duration && <span className="text-xs text-gray-500">{lesson.duration} min</span>}
+                                                        </div>
+                                                        {lesson.is_preview && (
+                                                            <span
+                                                                className={`text-xs px-2 py-1 rounded-full bg-${themeColors.accent}-100 text-${themeColors.accent}-700`}
+                                                            >
+                                                                Preview
+                                                            </span>
+                                                        )}
+                                                        {isPaid && !lesson.is_preview && (
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="h-5 w-5 text-gray-400"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth={2}
+                                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                                                />
+                                                            </svg>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="text-center py-4 text-gray-500">No lessons available in this section</div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        })}
                     </div>
                 ) : (
                     <div
                         className={`bg-${themeColors.accent}-50 p-6 rounded-lg text-center border border-${themeColors.accent}-100`}
                     >
-                        <p className="text-gray-500">No content available for this course yet.</p>
+                        <p className="text-gray-500">No sections available for this course yet.</p>
                     </div>
                 )}
             </div>
@@ -414,7 +603,7 @@ const CourseDetail = () => {
                     <button
                         className={`mt-4 md:mt-0 px-8 py-3 bg-white text-${themeColors.primary}-600 rounded-lg hover:bg-${themeColors.primary}-50 transition-colors duration-300 font-medium shadow-md`}
                     >
-                        Múc Ngay 👈🏿
+                        Enroll Now
                     </button>
                 </div>
             )}
@@ -423,3 +612,4 @@ const CourseDetail = () => {
 }
 
 export default CourseDetail
+
