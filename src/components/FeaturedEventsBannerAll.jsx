@@ -130,7 +130,7 @@ const FeaturedEventsBannerAll = () => {
     return (
         <div className="max-w-8xl mx-auto px-4 py-8">
             <blockquote className="border-l-4 border-blue-500 pl-4 italic mb-6">
-                <h2 className="text-2xl font-bold">Sự kiện</h2>
+                <h2 className="text-2xl font-bold">Tất cả sự kiện</h2>
             </blockquote>
 
             <div className="flex justify-between items-center w-full mb-4">

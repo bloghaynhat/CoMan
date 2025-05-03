@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Info } from "lucide-r
 import EventCardBanner from "./EventCardBanner.jsx"
 import EventDetailModal from "./EventDetailModal.jsx"
 import axios from "axios";
+import { startOfWeek, endOfWeek, isAfter, isBefore } from "date-fns"; // Các hàm cần thiết
 
 const FeaturedEventsBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -18,19 +19,43 @@ const FeaturedEventsBanner = () => {
     console.log(event)
   }
 
-  // Gọi API để lấy dữ liệu sự kiện
+  const [noEvents, setNoEvents] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     axios.get("https://comanbe.onrender.com/api/events/")
       .then((response) => {
         const allEvents = response.data;
-        // Cập nhật state với dữ liệu từ API
-        setEvents(allEvents);
+
+        // Lấy ngày hiện tại và tính toán ngày bắt đầu và kết thúc tuần
+        const today = new Date();
+        const startOfWeekDate = startOfWeek(today, { weekStartsOn: 1 }); // Bắt đầu tuần từ thứ 2
+        const endOfWeekDate = endOfWeek(today, { weekStartsOn: 1 });   // Kết thúc tuần vào chủ nhật
+
+        // Lọc các sự kiện có ngày nằm trong tuần này
+        const eventsThisWeek = allEvents.filter((event) => {
+          const eventDate = new Date(event.date); // Ngày của sự kiện
+
+          // Kiểm tra nếu sự kiện có ngày nằm trong tuần này
+          return isAfter(eventDate, startOfWeekDate) && isBefore(eventDate, endOfWeekDate);
+        });
+
+        // Nếu không có sự kiện nào, set trạng thái là không có sự kiện
+        if (eventsThisWeek.length === 0) {
+          setNoEvents(true);
+        } else {
+          setNoEvents(false);
+        }
+
+        // Cập nhật danh sách sự kiện
+        setEvents(eventsThisWeek);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Lỗi khi gọi API:", error);
+        setLoading(false);
       });
   }, []);
-
 
 
   const categories = [
@@ -64,84 +89,41 @@ const FeaturedEventsBanner = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <blockquote className="border-l-4 border-blue-500 pl-4 italic mb-6 -ml-20">
+        <h2 className="text-2xl font-bold">Sự kiện trong tuần</h2>
+      </blockquote>
+
+      {
+        loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {events.slice(currentIndex, currentIndex + eventsPerPage).map((event) => (
+              <EventCardBanner
+                key={event.id}
+                event={event}
+                onViewDetail={XemChiTiet}
+              />
+            ))}
+          </div>
+        ) : noEvents ? (
+          <div className="text-center">
+            <p>Không có sự kiện cho tuần này.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {events.slice(currentIndex, currentIndex + eventsPerPage).map((event) => (
+              <EventCardBanner
+                key={event.id}
+                event={event}
+                onViewDetail={XemChiTiet}
+              />
+            ))}
+          </div>
+        )
+      }
 
 
       {/* Events grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.slice(currentIndex, currentIndex + eventsPerPage).map((event) => (
-          // <div
-          //   key={event.id}
-          //   className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col transform transition-transform hover:scale-[1.02] hover:shadow-xl"
-          // >
-          //   <div className="relative h-48">
-          //     <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
-          //     <div className="absolute top-0 right-0 m-2">
-          //       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
-          //         {event.category}
-          //       </span>
-          //     </div>
-          //     {event.price === "Miễn phí" && (
-          //       <div className="absolute bottom-0 left-0 m-2">
-          //         <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
-          //           {event.price}
-          //         </span>
-          //       </div>
-          //     )}
-          //   </div>
 
-          //   <div className="p-5 flex-grow">
-          //     <h3 className="text-lg font-bold mb-3 text-gray-800 line-clamp-2">{event.title}</h3>
-
-          //     <div className="space-y-2 text-sm text-gray-600">
-          //       <div className="flex items-center">
-          //         <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-          //         <span>
-          //           {formatDate(event.date)} | {event.time}
-          //         </span>
-          //       </div>
-
-          //       <div className="flex items-center">
-          //         <MapPin className="h-4 w-4 mr-2 text-blue-500" />
-          //         <span>{event.location}</span>
-          //       </div>
-
-          //       {event.price !== "Miễn phí" && (
-          //         <div className="flex items-center">
-          //           <Tag className="h-4 w-4 mr-2 text-blue-500" />
-          //           <span>{event.price}</span>
-          //         </div>
-          //       )}
-          //     </div>
-
-          //     <div className="mt-4">
-          //       <p className="text-gray-600 text-sm line-clamp-3">
-          //         <Info className="h-4 w-4 inline mr-2 text-blue-500" />
-          //         {event.description}
-          //       </p>
-          //     </div>
-          //   </div>
-
-          //   <div className="px-5 py-3 bg-gray-50 border-t">
-          //     <a
-          //       href={`/events/${event.id}`}
-          //       className="flex items-center justify-center w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
-          //       onClick={(e) => {
-          //         e.preventDefault()
-          //         XemChiTiet(event)
-          //       }}
-          //     >
-          //       Xem chi tiết
-          //       <ChevronRight className="h-4 w-4 ml-1" />
-          //     </a>
-          //   </div>
-          // </div>
-          <EventCardBanner
-            key={event.id}
-            event={event}
-            onViewDetail={XemChiTiet}
-          />
-        ))}
-      </div>
 
       {/* Navigation controls - Bottom */}
       <div className="flex justify-center mt-8 gap-2">
