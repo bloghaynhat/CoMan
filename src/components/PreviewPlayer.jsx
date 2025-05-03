@@ -1,37 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 
-const PreviewPlayer = ({ videoId, previewDuration = 10 }) => {
-    const iframeRef = useRef(null);
-    useEffect(() => {
-        const onMessage = (event) => {
-            if (!event.data || typeof event.data !== 'string') return;
-
-            const message = JSON.parse(event.data);
-            if (message.event === 'onStateChange' && message.info === 1) {
-                setTimeout(() => {
-                    iframeRef.current.contentWindow.postMessage(
-                        JSON.stringify({ event: 'command', func: 'pauseVideo' }),
-                        '*'
-                    );
-                }, previewDuration * 1000);
-            }
-        };
-
-        window.addEventListener('message', onMessage);
-        return () => {
-            window.removeEventListener('message', onMessage);
-        };
-    }, [previewDuration]);
+const PreviewPlayer = ({ videoId }) => {
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`; // Lấy thumbnail từ YouTube
 
     return (
-        <iframe
-            ref={iframeRef}
-            className="w-full aspect-video rounded-lg shadow"
-            src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1`}
-            title="YouTube preview"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-        />
+        <div className="relative w-full aspect-video">
+            <img
+                src={thumbnailUrl}
+                alt="Video Thumbnail"
+                className="w-full h-full object-cover rounded-lg"
+            />
+            <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-blue-300 opacity-50">
+                <p className="text-red-600 font-bold">Mua ngay khóa học để xem!</p>
+            </div>
+        </div>
     );
 };
 

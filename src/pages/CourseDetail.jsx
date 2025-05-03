@@ -3,9 +3,11 @@ import { useParams, useNavigate } from "react-router-dom"
 import { UserContext } from "../context/UserContext";
 import PreviewPlayer from "../components/PreviewPlayer";
 import axios from "axios"
+import MomoFake from "../components/MomoFake";
 
 const CourseDetail = () => {
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
+    const [showPaymentPopup, setShowPaymentPopup] = useState(false);
     const { id } = useParams()
     const navigate = useNavigate()
     const [sections, setSections] = useState([])
@@ -14,22 +16,35 @@ const CourseDetail = () => {
     const [activeSection, setActiveSection] = useState({})
     const [course, setCourse] = useState({})
     const [hasAccess, setHasAccess] = useState(false);
+    useEffect(() => {
+        setLoading(true);
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            setUser(storedUser);
+        }
+        setLoading(false);
+    }, []);
 
-
-
+    console.log("User from localStorage:", user);
     const userHasAccess = async (user, courseId) => {
         if (!user || !user.access_token) {
             return false;
         }
+
         try {
-            const response = await axios.get("https://comanbe.onrender.com/api/enrollments/", {
+            const userResponse = await axios.get("https://comanbe.onrender.com/api/auth/user/", {
                 headers: {
                     Authorization: `Bearer ${user.access_token}`,
                 },
             });
 
-            const enrolledCourses = response.data;
-            const hasAccess = enrolledCourses.some((enrollment) => enrollment.course === courseId);
+            const userId = userResponse.data.id;
+            const enrollResponse = await axios.get("https://comanbe.onrender.com/api/enrollments/");
+            const enrollments = enrollResponse.data;
+            const hasAccess = enrollments.some(
+                (enroll) => enroll.user === userId && enroll.course === courseId
+            );
+
             return hasAccess;
         } catch (error) {
             console.error("Lỗi khi kiểm tra quyền truy cập:", error);
@@ -37,24 +52,61 @@ const CourseDetail = () => {
         }
     };
 
-
     function getVideoId(url) {
         const regExp = /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/;
         const match = url.match(regExp);
         return match ? match[1] : null;
     }
 
-
     useEffect(() => {
         const checkAccess = async () => {
-            const result = await userHasAccess(user, course?.id);
-            setHasAccess(result);
+            if (user && course?.id) {
+                const result = await userHasAccess(user, course.id);
+                setHasAccess(result);
+            }
         };
-
-        if (course && user !== undefined) {
+        if (user !== null && course?.id) {
             checkAccess();
         }
-    }, [course, user]);
+    }, [user, course]);
+
+    // const handleEnroll = async () => {
+    //     if (!user || !user.access_token) {
+    //         alert("Bạn cần đăng nhập để đăng ký khóa học.");
+    //         return;
+    //     }
+
+    //     try {
+    //         const res = await axios.post(
+    //             "https://comanbe.onrender.com/api/enrollments/",
+    //             {
+    //                 user: user.id,
+    //                 course: course.id,
+    //             },
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${user.access_token}`,
+    //                 },
+    //             }
+    //         );
+
+    //         alert("Đăng ký khóa học thành công!");
+    //         setHasAccess(true);
+    //     } catch (error) {
+    //         console.error("Lỗi khi đăng ký khóa học:", error);
+    //         alert("Đăng ký thất bại. Vui lòng thử lại sau.");
+    //     }
+    // };
+    const handleEnroll = () => {
+        if (user && course) {
+            setShowPaymentPopup(true); ư
+        }
+    };
+
+    const handlePaymentSuccess = () => {
+        setHasAccess(true);
+        alert("Bạn đã đăng ký khóa học thành công!");
+    };
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -65,7 +117,6 @@ const CourseDetail = () => {
                 console.error("Failed to fetch course info:", error);
             }
         };
-
         if (id) {
             fetchCourse();
         }
@@ -99,7 +150,6 @@ const CourseDetail = () => {
             setLoading(false);
         }
     };
-
     useEffect(() => {
         if (id) {
             fetchSections();
@@ -131,6 +181,7 @@ const CourseDetail = () => {
         if (!price || price === "0.00") return "Free"
         return `${Number.parseFloat(price).toLocaleString()} VNĐ`
     }
+
     const isPaid = course?.is_paid
     const themeColors = isPaid
         ? {
@@ -419,23 +470,24 @@ const CourseDetail = () => {
                                                                 <div className="flex-grow">
                                                                     <h5 className="text-gray-800 font-medium">{lesson.title}</h5>
 
-                                                                    {/* Kiểm tra nếu là khóa học trả phí và người dùng chưa có quyền truy cập */}
-                                                                    {(course.is_paid && !userHasAccess) ? (
+                                                                    {/* Kiểm tra khóa học trả phí và người dùng đã đăng nhập chưa */}
+                                                                    {(course.is_paid && !user) ? (
                                                                         <div>
                                                                             <p className="text-sm text-red-500 mb-2">
                                                                                 Chưa đăng nhập gì đó.
                                                                             </p>
-                                                                            <PreviewPlayer videoId={getVideoId(lesson.video_url)} previewDuration={10} />
+                                                                            <PreviewPlayer videoId={getVideoId(lesson.video_url)} />
                                                                         </div>
                                                                     ) : (
                                                                         isYoutubeVideo && (
                                                                             <>
+                                                                                {/* Kiểm tra trả phí và mua hay chưa*/}
                                                                                 {course.is_paid && !hasAccess ? (
                                                                                     <div>
                                                                                         <p className="text-sm text-red-500 mb-2">
                                                                                             Đây là bản xem trước. Vui lòng mua khóa học để xem toàn bộ nội dung.
                                                                                         </p>
-                                                                                        <PreviewPlayer videoId={getVideoId(lesson.video_url)} previewDuration={10} />
+                                                                                        <PreviewPlayer videoId={getVideoId(lesson.video_url)} />
                                                                                     </div>
                                                                                 ) : (
                                                                                     <iframe
@@ -445,6 +497,7 @@ const CourseDetail = () => {
                                                                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                                                         allowFullScreen
                                                                                     />
+
                                                                                 )}
                                                                             </>
                                                                         )
@@ -476,7 +529,8 @@ const CourseDetail = () => {
                                                 <div className="text-center py-4 text-gray-500">No lessons available in this section</div>
                                             )}
                                         </div>
-                                    )}
+                                    )
+                                    }
                                 </div>
                             )
                         })}
@@ -494,9 +548,27 @@ const CourseDetail = () => {
                         <p className="text-white/80 mb-1">Giá:</p>
                         <p className="text-3xl font-bold">{formatPrice(course.price)}</p>
                     </div>
-                    <button className="mt-4 md:mt-0 px-8 py-3 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md">
-                        Đăng ký ngay
-                    </button>
+                    {hasAccess ? (
+                        <span className="mt-4 md:mt-0 px-8 py-3 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block">
+                            Đã mua
+                        </span>
+                    ) : (
+                        <button
+                            onClick={handleEnroll}
+                            className="mt-4 md:mt-0 px-8 py-3 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
+                        >
+                            Đăng ký ngay
+                        </button>
+                    )}
+                    <MomoFake
+                        show={showPaymentPopup}
+                        onClose={() => setShowPaymentPopup(false)}
+                        user={user}
+                        course={course}
+                        onSuccess={handlePaymentSuccess}
+                    />
+
+
                 </div>
             )}
         </div>
