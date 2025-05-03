@@ -2,7 +2,7 @@
 import React from 'react';
 const CategoryFilter = ({ categories, selectedCategory, handleCategoryChange }) => {
     return (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mr-2">
             {categories.map((category) => (
                 <button
                     key={category.id}

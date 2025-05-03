@@ -26,6 +26,7 @@ const FeaturedEventsBannerAll = () => {
         return '';
     }, [user]);
 
+
     const categories = [
         { id: 1, name: "All" },
         { id: 2, name: "workshop" },
@@ -33,7 +34,7 @@ const FeaturedEventsBannerAll = () => {
         { id: 4, name: "conference" },
     ];
 
-    
+    // Ham lấy ra danh sách sự kiện đã đăng ký của người dùng
     const fetchRegisteredEvents = async () => {
         if (!user?.access_token) return;
         try {
@@ -47,7 +48,7 @@ const FeaturedEventsBannerAll = () => {
             console.error("Lỗi lấy sự kiện đã đăng ký:", error);
         }
     };
-
+    // lấy ra tất cả danh sách sự kiện
     const fetchAllEvents = async () => {
         try {
             const { data } = await axios.get("https://comanbe.onrender.com/api/events/");
@@ -56,11 +57,11 @@ const FeaturedEventsBannerAll = () => {
             console.error("Lỗi lấy sự kiện:", error);
         }
     };
-
+    // gọi hàm lấy ra tất cả sự kiện và sự kiện đã đăng ký khi component được mount
     useEffect(() => {
         fetchAllEvents();
     }, []);
-
+    // gọi hàm lấy ra sự kiện đã đăng ký khi người dùng đăng nhập
     useEffect(() => {
         if (user?.access_token) {
             fetchRegisteredEvents();
@@ -75,16 +76,16 @@ const FeaturedEventsBannerAll = () => {
             alert("Bạn cần đăng nhập.");
             return;
         }
-    
+
         setLoadingEventId(eventId);
-    
+
         try {
             if (alreadyRegistered) {
                 await axios.delete(`https://comanbe.onrender.com/api/event-registers/cancel/${eventId}/`, {
                     headers: {
-                      Authorization: `Bearer ${user.access_token}`,
+                        Authorization: `Bearer ${user.access_token}`,
                     }
-                  });
+                });
             } else {
                 await axios.post(
                     "https://comanbe.onrender.com/api/event-registers/",
@@ -102,14 +103,17 @@ const FeaturedEventsBannerAll = () => {
             setLoadingEventId(null);
         }
     };
-    
+    // Hàm lấy ra từ khóa tìm kiếm
     const handleSearchChange = (e) => setSearchQuery(e.target.value);
+    // hàm lọc sự kiện theo danh mục
     const handleCategoryChange = (categoryName) => setSelectedCategory(categoryName);
+    // hàm reset lại các bộ lọc
     const resetFilters = () => {
         setSearchQuery("");
         setSelectedCategory("All");
     };
 
+    // hàm lọc sự kiện theo từ khóa và danh mục
     const filteredEvents = allEvents.filter((event) => {
         const matchesSearch =
             searchQuery === "" ||
@@ -129,7 +133,7 @@ const FeaturedEventsBannerAll = () => {
                 <h2 className="text-2xl font-bold">Sự kiện</h2>
             </blockquote>
 
-            <div className="flex mb-3">
+            <div className="flex justify-between items-center w-full mb-4">
                 <SearchBar searchQuery={searchQuery} handleSearchChange={handleSearchChange} />
                 <CategoryFilter categories={categories} selectedCategory={selectedCategory} handleCategoryChange={handleCategoryChange} />
             </div>
