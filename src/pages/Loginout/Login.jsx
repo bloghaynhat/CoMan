@@ -20,6 +20,7 @@ const Login = () => {
         role: data.role,
         access_token: data.access,
         refresh_token: data.refresh,
+        id: userInfo.id,
       });
 
       console.log("Login successful!");

@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 });
 
 // Hàm đăng nhập
-export const login = async(username, password) => {
+export const login = async (username, password) => {
     try {
         // Gửi request để nhận token
         const response = await axiosInstance.post("/api/token/", {
@@ -36,7 +36,7 @@ export const login = async(username, password) => {
 };
 
 // Hàm làm mới token
-export const refreshToken = async() => {
+export const refreshToken = async () => {
     const refreshToken = localStorage.getItem("refresh_token");
     if (!refreshToken) {
         throw new Error("No refresh token found.");
@@ -61,11 +61,12 @@ export const refreshToken = async() => {
 export const logout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    localStorage.removeItem("role"); // Xóa role khỏi localStorage
+    localStorage.removeItem("role");
+    // Xóa role khỏi localStorage
 };
 
 // Hàm lấy thông tin người dùng từ access token
-export const getUserInfo = async() => {
+export const getUserInfo = async () => {
     try {
         // Lấy access token từ localStorage
         const accessToken = localStorage.getItem("access_token");
@@ -84,6 +85,7 @@ export const getUserInfo = async() => {
         // Lưu vào localStorage
         localStorage.setItem("first_name", response.data.first_name);
         localStorage.setItem("last_name", response.data.last_name);
+        localStorage.setItem("id", response.data.id); // Cập nhật role vào localStorage
         // Trả về dữ liệu người dùng từ API
         return response.data;
     } catch (error) {

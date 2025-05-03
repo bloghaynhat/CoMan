@@ -2,9 +2,6 @@ import React, { useEffect, useRef } from 'react';
 
 const PreviewPlayer = ({ videoId, previewDuration = 10 }) => {
     const iframeRef = useRef(null);
-    console.log(`PreviewPlayer videoId: ${videoId}`);
-
-
     useEffect(() => {
         const onMessage = (event) => {
             if (!event.data || typeof event.data !== 'string') return;

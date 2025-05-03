@@ -6,8 +6,6 @@ import axios from "axios"
 
 const CourseDetail = () => {
     const { user } = useContext(UserContext);
-    console.log("Access token:", user?.id);
-
     const { id } = useParams()
     const navigate = useNavigate()
     const [sections, setSections] = useState([])
@@ -16,6 +14,8 @@ const CourseDetail = () => {
     const [activeSection, setActiveSection] = useState({})
     const [course, setCourse] = useState({})
     const [hasAccess, setHasAccess] = useState(false);
+
+
 
     const userHasAccess = async (user, courseId) => {
         if (!user || !user.access_token) {
@@ -29,7 +29,6 @@ const CourseDetail = () => {
             });
 
             const enrolledCourses = response.data;
-
             const hasAccess = enrolledCourses.some((enrollment) => enrollment.course === courseId);
             return hasAccess;
         } catch (error) {
@@ -37,6 +36,7 @@ const CourseDetail = () => {
             return false;
         }
     };
+
 
     function getVideoId(url) {
         const regExp = /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/;
@@ -374,8 +374,6 @@ const CourseDetail = () => {
                                                 sectionLessons.map((lesson) => {
                                                     const articlePoints = formatArticleContent(lesson.article_content)
                                                     const isYoutubeVideo = lesson.video_url && lesson.video_url.includes("youtube.com")
-                                                    console.log(getVideoId(lesson.video_url));
-
                                                     return (
                                                         <div key={lesson.id} className="rounded-md border border-gray-100 overflow-hidden">
                                                             <div className="flex items-start p-3 bg-white hover:bg-sky-50 transition-colors duration-200">
@@ -425,7 +423,7 @@ const CourseDetail = () => {
                                                                     {(course.is_paid && !userHasAccess) ? (
                                                                         <div>
                                                                             <p className="text-sm text-red-500 mb-2">
-                                                                                Đây là bản xem trước. Vui lòng mua khóa học để xem toàn bộ nội dung.
+                                                                                Chưa đăng nhập gì đó.
                                                                             </p>
                                                                             <PreviewPlayer videoId={getVideoId(lesson.video_url)} previewDuration={10} />
                                                                         </div>
