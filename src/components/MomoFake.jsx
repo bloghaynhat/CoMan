@@ -25,7 +25,7 @@ const MomoFake = ({ show, onClose, user, course, onSuccess }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-fuchsia-600 bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
                 <h2 className="text-lg font-semibold mb-4">Thanh toán Momo</h2>
                 <p className="mb-4">Giả lập thanh toán thành công sau 3 giây...</p>
