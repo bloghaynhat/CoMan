@@ -28,7 +28,7 @@ const Login = () => {
       console.log("Login successful!");
       if (data.role === "admin") {
         console.log("Admin tới");
-        navigate("/admin");
+        navigate("/admin/dashboard");
       } else {
         console.log("User tới");
         navigate("/");
