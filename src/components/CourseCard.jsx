@@ -27,7 +27,7 @@ const CourseCard = ({ course, type }) => {
               {course.price.toLocaleString()} VNĐ
             </p>
           )}
-          
+
           {!course.is_paid && (
             <p className="mt-2 text-green-600 font-semibold">Miễn phí</p>
           )}
