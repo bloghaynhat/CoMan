@@ -28,6 +28,8 @@ const UserProvider = ({ children }) => {
     localStorage.setItem("id", userData.id);
     localStorage.setItem("access_token", userData.access_token);
     localStorage.setItem("refresh_token", userData.refresh_token);
+    localStorage.setItem("id", userData.id);
+
   };
 
   const logoutUser = () => {

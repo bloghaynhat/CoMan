@@ -10,6 +10,7 @@ const axiosInstance = axios.create({
 
 // Hàm đăng nhập
 export const login = async (username, password) => {
+
   try {
     // Gửi request để nhận token
     const response = await axiosInstance.post("/api/token/", {
@@ -37,6 +38,7 @@ export const login = async (username, password) => {
 
 // Hàm làm mới token
 export const refreshToken = async () => {
+
   const refreshToken = localStorage.getItem("refresh_token");
   if (!refreshToken) {
     throw new Error("No refresh token found.");
@@ -84,11 +86,24 @@ export const getUserInfo = async () => {
     // Lưu vào localStorage
     localStorage.setItem("first_name", response.data.first_name);
     localStorage.setItem("last_name", response.data.last_name);
-    localStorage.setItem("id", response.data.id);
+    localStorage.setItem("id", response.data.id); // Cập nhật role vào localStorage
     // Trả về dữ liệu người dùng từ API
     return response.data;
   } catch (error) {
     console.error("Error getting user info: ", error);
     throw new Error("Failed to retrieve user information.");
   }
+
+  // Gửi yêu cầu đến API để lấy thông tin người dùng, sử dụng token trong header
+  const response = await axiosInstance.get("/api/auth/user/", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`, // Thêm token vào header Authorization
+    },
+  });
+  // Lưu vào localStorage
+  localStorage.setItem("first_name", response.data.first_name);
+  localStorage.setItem("last_name", response.data.last_name);
+  localStorage.setItem("id", response.data.id);
+  // Trả về dữ liệu người dùng từ API
+  return response.data;
 };
