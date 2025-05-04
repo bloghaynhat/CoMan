@@ -7,8 +7,10 @@ import VeChungToi from "./pages/VeChungToi";
 import SuKien from "./pages/SuKien";
 import Login from "./pages/Loginout/Login";
 import CourseDetail from "./pages/CourseDetail";
-import { UserProvider } from "./context/UserContext";
 import Dashboard from "./pages/Admin/DashboardAdmin";
+import KhoaHoc from "./pages/Admin/KhoaHoc";
+import NguoiDung from "./pages/Admin/NguoiDung";
+import ThongKe from "./pages/Admin/ThongKe";
 
 const router = createBrowserRouter([
   {
@@ -47,7 +49,25 @@ const router = createBrowserRouter([
   },
   {
     path: "admin",
-    element: <Dashboard />,
+    element: <RootPage />,
+    children: [
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "courses",
+        element: <KhoaHoc />,
+      },
+      {
+        path: "users",
+        element: <NguoiDung />,
+      },
+      {
+        path: "stats",
+        element: <ThongKe />,
+      },
+    ],
   },
 ]);
 

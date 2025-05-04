@@ -25,6 +25,7 @@ const UserProvider = ({ children }) => {
     localStorage.setItem("first_name", userData.first_name);
     localStorage.setItem("last_name", userData.last_name);
     localStorage.setItem("role", userData.role);
+    localStorage.setItem("id", userData.id);
     localStorage.setItem("access_token", userData.access_token);
     localStorage.setItem("refresh_token", userData.refresh_token);
     localStorage.setItem("id", userData.id);
@@ -34,6 +35,8 @@ const UserProvider = ({ children }) => {
   const logoutUser = () => {
     setUser(null);
     localStorage.clear(); // hoặc chỉ xóa các key liên quan
+
+    window.location.href = "/"; // Điều hướng về trang chủ và tải lại trang
   };
 
   return (

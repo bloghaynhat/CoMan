@@ -7,9 +7,11 @@ const Login = () => {
   const { loginUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    setIsLoading(true);
     try {
       const data = await login(username, password); // Gọi API login
       const userInfo = await getUserInfo(data.access);
@@ -18,6 +20,7 @@ const Login = () => {
         first_name: userInfo.first_name,
         last_name: userInfo.last_name,
         role: data.role,
+        id: userInfo.id,
         access_token: data.access,
         refresh_token: data.refresh,
         id: userInfo.id,
@@ -33,36 +36,43 @@ const Login = () => {
       }
     } catch (error) {
       console.log("Login failed. Please check your credentials.");
+    } finally {
+      setIsLoading(false); // Tắt chế độ loading khi xong
     }
   };
-
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleLogin(); // Gọi handleLogin khi nhấn Enter
+    }
+  };
   return (
-    <div class="bg-gray-50">
-      <div class="min-h-screen flex flex-col items-center justify-center py-6 px-4">
-        <div class="max-w-md w-full">
-          <div class="p-8 rounded-2xl bg-white shadow">
-            <h2 class="text-slate-900 text-center text-3xl font-semibold">
+    <div className="bg-gray-50">
+      <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
+        <div className="max-w-md w-full">
+          <div className="p-8 rounded-2xl bg-white shadow">
+            <h2 className="text-slate-900 text-center text-3xl font-semibold">
               Đăng nhập
             </h2>
-            <form class="mt-12 space-y-6">
+            <form className="mt-12 space-y-6">
               <div>
-                <label class="text-slate-800 text-sm font-medium mb-2 block">
+                <label className="text-slate-800 text-sm font-medium mb-2 block">
                   User name
                 </label>
-                <div class="relative flex items-center">
+                <div className="relative flex items-center">
                   <input
                     name="username"
                     type="text"
                     required
-                    class="w-full text-slate-800 text-sm border border-slate-300 px-4 py-3 rounded-md outline-blue-600"
+                    className="w-full text-slate-800 text-sm border border-slate-300 px-4 py-3 rounded-md outline-blue-600"
                     placeholder="Enter user name"
                     onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={handleKeyPress}
                   />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="#bbb"
                     stroke="#bbb"
-                    class="w-4 h-4 absolute right-4"
+                    className="w-4 h-4 absolute right-4"
                     viewBox="0 0 24 24"
                   >
                     <circle
@@ -80,23 +90,24 @@ const Login = () => {
               </div>
 
               <div>
-                <label class="text-slate-800 text-sm font-medium mb-2 block">
+                <label className="text-slate-800 text-sm font-medium mb-2 block">
                   Password
                 </label>
-                <div class="relative flex items-center">
+                <div className="relative flex items-center">
                   <input
                     name="password"
                     type="password"
                     required
-                    class="w-full text-slate-800 text-sm border border-slate-300 px-4 py-3 rounded-md outline-blue-600"
+                    className="w-full text-slate-800 text-sm border border-slate-300 px-4 py-3 rounded-md outline-blue-600"
                     placeholder="Enter password"
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handleKeyPress}
                   />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="#bbb"
                     stroke="#bbb"
-                    class="w-4 h-4 absolute right-4 cursor-pointer"
+                    className="w-4 h-4 absolute right-4 cursor-pointer"
                     viewBox="0 0 128 128"
                   >
                     <path
@@ -107,45 +118,109 @@ const Login = () => {
                 </div>
               </div>
 
-              <div class="flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center">
                   <input
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
-                    class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                    className="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
                   />
                   <label
                     for="remember-me"
-                    class="ml-3 block text-sm text-slate-800"
+                    className="ml-3 block text-sm text-slate-800"
                   >
                     Remember me
                   </label>
                 </div>
-                <div class="text-sm">
+                <div className="text-sm">
                   <a
                     href="jajvascript:void(0);"
-                    class="text-blue-600 hover:underline font-semibold"
+                    className="text-blue-600 hover:underline font-semibold"
                   >
                     Forgot your password?
                   </a>
                 </div>
               </div>
 
-              <div class="!mt-12">
+              <div className="!mt-12">
                 <button
                   type="button"
-                  class="w-full py-2 px-4 text-[15px] font-medium tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
+                  className={`w-full py-2 px-4 text-[15px] font-medium tracking-wide rounded-md text-white ${
+                    isLoading ? "bg-gray-600" : "bg-blue-600 hover:bg-blue-700"
+                  } focus:outline-none`}
                   onClick={handleLogin}
+                  disabled={isLoading} // Disable button khi đang loading
                 >
-                  Đăng nhập
+                  {isLoading ? (
+                    <svg
+                      className="w-6 h-6 mx-auto animate-spin"
+                      width="30"
+                      height="30"
+                      viewBox="0 0 44 44"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="22"
+                        cy="22"
+                        r="6"
+                        fill="none"
+                        stroke="#fb60b3"
+                        strokeWidth="2"
+                      >
+                        <animate
+                          attributeName="r"
+                          from="6"
+                          to="20"
+                          dur="1.5s"
+                          begin="0s"
+                          repeatCount="indefinite"
+                        ></animate>
+                        <animate
+                          attributeName="opacity"
+                          from="1"
+                          to="0"
+                          dur="1.5s"
+                          begin="0s"
+                          repeatCount="indefinite"
+                        ></animate>
+                      </circle>
+                      <circle
+                        cx="22"
+                        cy="22"
+                        r="6"
+                        fill="none"
+                        stroke="#fb60b3"
+                        strokeWidth="2"
+                      >
+                        <animate
+                          attributeName="r"
+                          from="6"
+                          to="20"
+                          dur="1.5s"
+                          begin="0.5s"
+                          repeatCount="indefinite"
+                        ></animate>
+                        <animate
+                          attributeName="opacity"
+                          from="1"
+                          to="0"
+                          dur="1.5s"
+                          begin="0.5s"
+                          repeatCount="indefinite"
+                        ></animate>
+                      </circle>
+                    </svg>
+                  ) : (
+                    "Đăng nhập"
+                  )}
                 </button>
               </div>
-              <p class="text-slate-800 text-sm !mt-6 text-center">
+              <p className="text-slate-800 text-sm !mt-6 text-center">
                 Don't have an account?{" "}
                 <a
                   href="javascript:void(0);"
-                  class="text-blue-600 hover:underline ml-1 whitespace-nowrap font-semibold"
+                  className="text-blue-600 hover:underline ml-1 whitespace-nowrap font-semibold"
                 >
                   Register here
                 </a>
