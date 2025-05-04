@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "components": "^0.1.0",
     "dayjs": "^1.11.13",
+    "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.488.0",

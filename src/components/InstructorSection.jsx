@@ -5,18 +5,18 @@ const TeamSection = () => {
     // Dữ liệu mẫu
     const instructors = [
         {
-            image: "path/to/image1.jpg",
-            name: "Lê Phạm Minh Đức",
+            image: "https://img.freepik.com/free-photo/programming-background-collage_23-2149901791.jpg?ga=GA1.1.7443125.1727764720&semt=ais_hybrid&w=740",
+            name: "Lê Ngọc Dung",
             position: "Giảng viên chính"
         },
         {
-            image: "path/to/image2.jpg",
+            image: "https://img.freepik.com/free-photo/programming-background-with-person-working-with-codes-computer_23-2150010130.jpg?ga=GA1.1.7443125.1727764720&semt=ais_hybrid&w=740",
             name: "Huỳnh Trọng Nhân",
             position: "Giảng viên chính"
         },
         {
-            image: "path/to/image3.jpg",
-            name: "Lê Ngọc Dung",
+            image: "https://img.freepik.com/premium-photo/composition-with-html-system-websites_23-2150866277.jpg?ga=GA1.1.7443125.1727764720&semt=ais_hybrid&w=740",
+            name: "Lê Phạm Minh Đức",
             position: "Giảng viên chính"
         }
     ];
