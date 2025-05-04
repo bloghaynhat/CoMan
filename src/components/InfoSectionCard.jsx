@@ -1,4 +1,4 @@
-const InfoSection = ({ title, content}) => {
+const InfoSectionCard = ({ title, content}) => {
     return (
       <section className="mb-8">
         <blockquote className="border-l-4 border-blue-500 pl-4 italic">
@@ -9,4 +9,4 @@ const InfoSection = ({ title, content}) => {
     );
 };
 
-export default InfoSection;
+export default InfoSectionCard;
