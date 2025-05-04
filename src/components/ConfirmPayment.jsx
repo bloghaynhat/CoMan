@@ -16,7 +16,9 @@ const ConfirmPayment = ({ show, onClose, user, course, onSuccess }) => {
                     },
                 }
             );
-            console.log("Enrollment created:", res.data);
+            const audio = new Audio('https://res.cloudinary.com/dbv9csgia/video/upload/v1746355047/ta-da_yrvBrlS_wwxm1q.mp3');
+            audio.play();
+
             onSuccess();
             onClose();
         } catch (error) {

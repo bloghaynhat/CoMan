@@ -65,7 +65,7 @@ const CourseDetail = () => {
         if (user !== null && course?.id) {
             checkAccess();
         }
-    }, [user, course]);
+    }, [user, course, hasAccess]);
 
 
     const handleEnroll = () => {
