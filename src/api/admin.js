@@ -54,3 +54,33 @@ export const fetchRevenueByCourse = async (num) => {
     throw error;
   }
 };
+
+export const getRevenueCourses = async () => {
+  try {
+    const response = await axiosInstance.get("/api/courses/top-revenue/");
+    const topRevenueCourses = response.data;
+    return topRevenueCourses;
+  } catch (error) {
+    console.error("Lỗi khi gọi API lấy top revenue course: ", error);
+    return null;
+  }
+};
+
+export const createCourse = async (courseData, token) => {
+  try {
+    const response = await axiosInstance.post(
+      '/api/courses/',
+      courseData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi thêm khóa học:', error);
+    throw error;
+  }
+};
+
