@@ -10,9 +10,10 @@ const UserProvider = ({ children }) => {
     const first_name = localStorage.getItem("first_name");
     const last_name = localStorage.getItem("last_name");
     const role = localStorage.getItem("role");
+    const id = localStorage.getItem("id");
 
-    if (first_name && last_name && role) {
-      setUser({ first_name, last_name, role });
+    if (first_name && last_name && role && id) {
+      setUser({ first_name, last_name, role, id });
     }
   }, []);
 
@@ -24,6 +25,7 @@ const UserProvider = ({ children }) => {
     localStorage.setItem("first_name", userData.first_name);
     localStorage.setItem("last_name", userData.last_name);
     localStorage.setItem("role", userData.role);
+    localStorage.setItem("id", userData.id);
     localStorage.setItem("access_token", userData.access_token);
     localStorage.setItem("refresh_token", userData.refresh_token);
   };
@@ -31,6 +33,8 @@ const UserProvider = ({ children }) => {
   const logoutUser = () => {
     setUser(null);
     localStorage.clear(); // hoặc chỉ xóa các key liên quan
+
+    window.location.href = "/"; // Điều hướng về trang chủ và tải lại trang
   };
 
   return (
