@@ -3,11 +3,11 @@ import { useParams, useNavigate } from "react-router-dom"
 import { UserContext } from "../context/UserContext";
 import PreviewPlayer from "../components/PreviewPlayer";
 import axios from "axios"
-import MomoFake from "../components/MomoFake";
+import ConfirmPayment from "../components/ConfirmPayment";
 
 const CourseDetail = () => {
     const { user, setUser } = useContext(UserContext);
-    const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
     const { id } = useParams()
     const navigate = useNavigate()
     const [sections, setSections] = useState([])
@@ -24,25 +24,21 @@ const CourseDetail = () => {
         }
         setLoading(false);
     }, []);
-
-    console.log("User from localStorage:", user);
     const userHasAccess = async (user, courseId) => {
         if (!user || !user.access_token) {
             return false;
         }
 
         try {
-            const userResponse = await axios.get("https://comanbe.onrender.com/api/auth/user/", {
+            const enrollResponse = await axios.get("https://comanbe.onrender.com/api/enrollments/", {
                 headers: {
                     Authorization: `Bearer ${user.access_token}`,
                 },
             });
 
-            const userId = userResponse.data.id;
-            const enrollResponse = await axios.get("https://comanbe.onrender.com/api/enrollments/");
             const enrollments = enrollResponse.data;
             const hasAccess = enrollments.some(
-                (enroll) => enroll.user === userId && enroll.course === courseId
+                (enroll) => enroll.user === user.id && enroll.course.id === courseId
             );
 
             return hasAccess;
@@ -51,6 +47,7 @@ const CourseDetail = () => {
             return false;
         }
     };
+
 
     function getVideoId(url) {
         const regExp = /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/;
@@ -70,42 +67,18 @@ const CourseDetail = () => {
         }
     }, [user, course]);
 
-    // const handleEnroll = async () => {
-    //     if (!user || !user.access_token) {
-    //         alert("Bạn cần đăng nhập để đăng ký khóa học.");
-    //         return;
-    //     }
 
-    //     try {
-    //         const res = await axios.post(
-    //             "https://comanbe.onrender.com/api/enrollments/",
-    //             {
-    //                 user: user.id,
-    //                 course: course.id,
-    //             },
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${user.access_token}`,
-    //                 },
-    //             }
-    //         );
-
-    //         alert("Đăng ký khóa học thành công!");
-    //         setHasAccess(true);
-    //     } catch (error) {
-    //         console.error("Lỗi khi đăng ký khóa học:", error);
-    //         alert("Đăng ký thất bại. Vui lòng thử lại sau.");
-    //     }
-    // };
     const handleEnroll = () => {
-        if (user && course) {
-            setShowPaymentPopup(true); ư
+        if (!user) {
+            navigate('/login');
+            return;
         }
+        setShowConfirm(true);
     };
 
     const handlePaymentSuccess = () => {
         setHasAccess(true);
-        alert("Bạn đã đăng ký khóa học thành công!");
+        setShowConfirm(false);
     };
 
     useEffect(() => {
@@ -471,7 +444,7 @@ const CourseDetail = () => {
                                                                     <h5 className="text-gray-800 font-medium">{lesson.title}</h5>
 
                                                                     {/* Kiểm tra khóa học trả phí và người dùng đã đăng nhập chưa */}
-                                                                    {(course.is_paid && !user) ? (
+                                                                    {(!user) ? (
                                                                         <div>
                                                                             <p className="text-sm text-red-500 mb-2">
                                                                                 Chưa đăng nhập gì đó.
@@ -482,7 +455,7 @@ const CourseDetail = () => {
                                                                         isYoutubeVideo && (
                                                                             <>
                                                                                 {/* Kiểm tra trả phí và mua hay chưa*/}
-                                                                                {course.is_paid && !hasAccess ? (
+                                                                                {!hasAccess ? (
                                                                                     <div>
                                                                                         <p className="text-sm text-red-500 mb-2">
                                                                                             Đây là bản xem trước. Vui lòng mua khóa học để xem toàn bộ nội dung.
@@ -542,7 +515,7 @@ const CourseDetail = () => {
                 )}
             </div>
 
-            {isPaid && (
+            {isPaid ? (
                 <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg">
                     <div>
                         <p className="text-white/80 mb-1">Giá:</p>
@@ -553,24 +526,56 @@ const CourseDetail = () => {
                             Đã mua
                         </span>
                     ) : (
-                        <button
-                            onClick={handleEnroll}
-                            className="mt-4 md:mt-0 px-8 py-3 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
-                        >
-                            Đăng ký ngay
-                        </button>
+                        <>
+                            <button
+                                onClick={handleEnroll}
+                                className="mt-4 md:mt-0 px-8 py-3 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
+                            >
+                                Đăng ký ngay
+                            </button>
+
+                            <ConfirmPayment
+                                show={showConfirm}
+                                onClose={() => setShowConfirm(false)}
+                                user={user}
+                                course={course}
+                                onSuccess={handlePaymentSuccess}
+                            />
+                        </>
                     )}
-                    <MomoFake
-                        show={showPaymentPopup}
-                        onClose={() => setShowPaymentPopup(false)}
-                        user={user}
-                        course={course}
-                        onSuccess={handlePaymentSuccess}
-                    />
+                </div>
+            ) : (
+                <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg">
+                    <div>
+                        <p className="text-white/80 mb-1">Khóa học miễn phí:</p>
+                        <p className="text-3xl font-bold">Miễn phí</p>
+                    </div>
+                    {hasAccess ? (
+                        <span className="mt-4 md:mt-0 px-8 py-3 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block">
+                            Đã đăng ký
+                        </span>
+                    ) : (
+                        <>
+                            <button
+                                onClick={handleEnroll}
+                                className="mt-4 md:mt-0 px-8 py-3 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors duration-300 font-medium shadow-md"
+                            >
+                                Đăng ký ngay
+                            </button>
+                            <ConfirmPayment
+                                show={showConfirm}
+                                onClose={() => setShowConfirm(false)}
+                                user={user}
+                                course={course}
+                                onSuccess={handlePaymentSuccess}
+                            />
+                        </>
 
 
+                    )}
                 </div>
             )}
+
         </div>
     )
 }
