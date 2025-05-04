@@ -1,13 +1,13 @@
 import * as LucideIcons from "lucide-react";
-import StatCard from "@/components/Dashboard/stat-card";
-import RecentCourses from "@/components/Dashboard/recent-course";
-import RevenueChart from "@/components/Dashboard/revenue-chart";
+import StatCard from "../../components/DashBoard/StatCard";
+import RecentCourses from "../../components/Dashboard/RecentCourses";
+import RevenueChart from "../../components/Dashboard/RevenueChart";
 import { useEffect, useState } from "react";
 import {
   fetchDashboardStats,
   fetchTotalStudentCourseByDate,
   fetchRevenueByCourse,
-} from "@/api/admin";
+} from "../../api/admin";
 
 export default function Dashboard() {
   // Xử lí 4 ô stat
