@@ -68,30 +68,13 @@ export const logout = () => {
 
 // Hàm lấy thông tin người dùng từ access token
 export const getUserInfo = async () => {
-    try {
-        // Lấy access token từ localStorage
-        const accessToken = localStorage.getItem("access_token");
+  try {
+    // Lấy access token từ localStorage
+    const accessToken = localStorage.getItem("access_token");
 
-        // Kiểm tra xem token có tồn tại không
-        if (!accessToken) {
-            throw new Error("Access token not found.");
-        }
-
-        // Gửi yêu cầu đến API để lấy thông tin người dùng, sử dụng token trong header
-        const response = await axiosInstance.get("/api/auth/user/", {
-            headers: {
-                Authorization: `Bearer ${accessToken}`, // Thêm token vào header Authorization
-            },
-        });
-        // Lưu vào localStorage
-        localStorage.setItem("first_name", response.data.first_name);
-        localStorage.setItem("last_name", response.data.last_name);
-        localStorage.setItem("id", response.data.id); // Cập nhật role vào localStorage
-        // Trả về dữ liệu người dùng từ API
-        return response.data;
-    } catch (error) {
-        console.error("Error getting user info: ", error);
-        throw new Error("Failed to retrieve user information.");
+    // Kiểm tra xem token có tồn tại không
+    if (!accessToken) {
+      throw new Error("Access token not found.");
     }
 
     // Gửi yêu cầu đến API để lấy thông tin người dùng, sử dụng token trong header
@@ -103,11 +86,24 @@ export const getUserInfo = async () => {
     // Lưu vào localStorage
     localStorage.setItem("first_name", response.data.first_name);
     localStorage.setItem("last_name", response.data.last_name);
-    localStorage.setItem("id", response.data.id);
+    localStorage.setItem("id", response.data.id); // Cập nhật role vào localStorage
     // Trả về dữ liệu người dùng từ API
     return response.data;
   } catch (error) {
     console.error("Error getting user info: ", error);
     throw new Error("Failed to retrieve user information.");
   }
+
+  // Gửi yêu cầu đến API để lấy thông tin người dùng, sử dụng token trong header
+  const response = await axiosInstance.get("/api/auth/user/", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`, // Thêm token vào header Authorization
+    },
+  });
+  // Lưu vào localStorage
+  localStorage.setItem("first_name", response.data.first_name);
+  localStorage.setItem("last_name", response.data.last_name);
+  localStorage.setItem("id", response.data.id);
+  // Trả về dữ liệu người dùng từ API
+  return response.data;
 };
