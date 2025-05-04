@@ -69,13 +69,10 @@ const CourseDetail = () => {
 
 
     const handleEnroll = () => {
-        if (!user) {
-            if (typeof window !== "undefined") {
-                navigate('/login');
-            }
-            navigate('/login');
-            return;
-        }
+        // if (!user) {
+        //     navigate('/login');
+        //     return;
+        // }
         setShowConfirm(true);
     };
 

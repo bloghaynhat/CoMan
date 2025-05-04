@@ -16,8 +16,8 @@ const ConfirmPayment = ({ show, onClose, user, course, onSuccess }) => {
                     },
                 }
             );
-            // const audio = new Audio('https://res.cloudinary.com/dbv9csgia/video/upload/v1746355047/ta-da_yrvBrlS_wwxm1q.mp3');
-            // audio.play();
+            const audio = new Audio('https://res.cloudinary.com/dbv9csgia/video/upload/v1746355047/ta-da_yrvBrlS_wwxm1q.mp3');
+            audio.play();
 
             onSuccess();
             onClose();
