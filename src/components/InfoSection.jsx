@@ -1,4 +1,5 @@
 import React from 'react';
+import InfoSectionCard from './InfoSectionCard';
 
 const InfoSection = () => {
     const sections = [
@@ -15,12 +16,11 @@ const InfoSection = () => {
     return (
         <div>
             {sections.map((section, index) => (
-                <section className="mb-8" key={index}>
-                    <blockquote className="border-l-4 border-blue-500 pl-4 italic">
-                        <h2 className="text-2xl font-semibold mb-4">{section.title}</h2>
-                    </blockquote>
-                    <p>{section.content}</p>
-                </section>
+                <InfoSectionCard
+                    key={index}
+                    title={section.title}
+                    content={section.content}
+                />
             ))}
         </div>
     );

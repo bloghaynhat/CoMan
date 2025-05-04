@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ExampleComponent = ({ image, name, position}) => {
+const InstructorCard = ({ image, name, position}) => {
   return (
     <div className="flex items-start space-x-4 p-4 bg-purple-100 rounded-md"> {/* Bố cục flex */}
       <div className="flex-1 text-left"> {/* Phần văn bản bên trái */}
@@ -12,4 +12,4 @@ const ExampleComponent = ({ image, name, position}) => {
   );
 };
 
-export default ExampleComponent;
+export default InstructorCard;
