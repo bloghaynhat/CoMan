@@ -7,8 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function RevenueChart({ courses, isLoadingRevenue }) {
+  const navigate = useNavigate();
   return (
     <Card className="col-span-1 flex flex-col justify-between">
       <CardHeader>
@@ -58,8 +60,12 @@ export default function RevenueChart({ courses, isLoadingRevenue }) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button variant="outline" className="w-full">
-          Xem báo cáo chi tiết
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => navigate("/admin/stats")}
+        >
+          Xem thống kê
         </Button>
       </CardFooter>
     </Card>
