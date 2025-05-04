@@ -1,7 +1,7 @@
 import * as LucideIcons from "lucide-react";
 import StatCard from "@/components/DashBoard/StatCard";
-import RecentCourses from "@/components/Dashboard/RecentCourses";
-import RevenueChart from "@/components/Dashboard/RevenueChart";
+import RecentCourses from "@/components/DashBoard/RecentCourses";
+import RevenueChart from "@/components/DashBoard/RevenueChart";
 import { useEffect, useState } from "react";
 import {
   fetchDashboardStats,
@@ -39,36 +39,6 @@ export default function Dashboard() {
       .finally(() => setIsLoadingRevenue(false));
   }, []);
   const statsArray = Object.values(stats); // [{ title, icon, count/amount, change }, ...]
-  const recentCourses = [
-    {
-      id: 1,
-      title: "Lập trình React JS từ cơ bản đến nâng cao",
-      students: 128,
-      revenue: "12,800,000đ",
-      status: "active",
-    },
-    {
-      id: 2,
-      title: "Thiết kế UI/UX chuyên nghiệp",
-      students: 85,
-      revenue: "8,500,000đ",
-      status: "active",
-    },
-    {
-      id: 3,
-      title: "Lập trình di động với Flutter",
-      students: 64,
-      revenue: "6,400,000đ",
-      status: "draft",
-    },
-    {
-      id: 4,
-      title: "NodeJS và ExpressJS cho backend",
-      students: 92,
-      revenue: "9,200,000đ",
-      status: "active",
-    },
-  ];
 
   return (
     <div className="space-y-6 w-10/12 m-auto my-6">
