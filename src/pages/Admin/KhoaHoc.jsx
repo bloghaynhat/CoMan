@@ -1,74 +1,55 @@
-import { PlusCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { PlusCircle } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import { getRevenueCourses } from "../../api/admin";
 import CourseTable from "@/components/CourseTable";
+import AddCourseModal from "@/components/CreateCourse/Modals/AddCourseModal";
+
 
 export default function KhoaHoc() {
-  const courses = [
-    {
-      id: 1,
-      title: "Lập trình React JS từ cơ bản đến nâng cao",
-      students: 128,
-      revenue: "12,800,000đ",
-      status: "active",
-      lastUpdated: "12/04/2023",
-    },
-    {
-      id: 2,
-      title: "Thiết kế UI/UX chuyên nghiệp",
-      students: 85,
-      revenue: "8,500,000đ",
-      status: "active",
-      lastUpdated: "05/04/2023",
-    },
-    {
-      id: 3,
-      title: "Lập trình di động với Flutter",
-      students: 64,
-      revenue: "6,400,000đ",
-      status: "draft",
-      lastUpdated: "28/03/2023",
-    },
-    {
-      id: 4,
-      title: "NodeJS và ExpressJS cho backend",
-      students: 92,
-      revenue: "9,200,000đ",
-      status: "active",
-      lastUpdated: "15/03/2023",
-    },
-    {
-      id: 5,
-      title: "Python cho Data Science",
-      students: 76,
-      revenue: "7,600,000đ",
-      status: "active",
-      lastUpdated: "02/03/2023",
-    },
-    {
-      id: 6,
-      title: "Lập trình game với Unity",
-      students: 58,
-      revenue: "5,800,000đ",
-      status: "draft",
-      lastUpdated: "20/02/2023",
-    },
-  ];
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const data = await getRevenueCourses();
+      if (data) {
+        setCourses(data);
+      }
+      setLoading(false);
+    };
+
+    fetchCourses();
+  }, []);
+
+  if (loading) {
+    return <div>Đang tải...</div>;
+  }
+  console.log(courses);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Quản lý khóa học</h2>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Thêm khóa học mới
-        </Button>
+        <AddCourseModal
+          onAdd={(newCourse) => {
+            const formatted = {
+              id: newCourse.id,
+              title: newCourse.title,
+              students: 0,
+              revenue: newCourse.price + "đ",
+              lastUpdated: new Date(newCourse.created_at).toLocaleDateString("vi-VN"),
+            };
+            setCourses((prev) => [formatted, ...prev]);
+          }}
+        >
+          <Button>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Thêm khóa học mới
+          </Button>
+        </AddCourseModal>
+
       </div>
 
       <Card>

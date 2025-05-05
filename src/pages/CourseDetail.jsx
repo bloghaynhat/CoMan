@@ -50,11 +50,10 @@ const CourseDetail = () => {
 
 
     function getVideoId(url) {
-        const regExp = /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/;
+        const regExp = /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
         const match = url.match(regExp);
         return match ? match[1] : null;
     }
-
     useEffect(() => {
         const checkAccess = async () => {
             if (user && course?.id) {

@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Cấu hình axios
 const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:8000", // Địa chỉ server của bạn
+  baseURL: "https://comanbe.onrender.com/", // Địa chỉ server của bạn
   headers: {
     "Content-Type": "application/json",
   },
@@ -55,12 +55,83 @@ export const fetchRevenueByCourse = async (num) => {
   }
 };
 
+export const getRevenueCourses = async () => {
+  try {
+    const response = await axiosInstance.get("/api/courses/top-revenue/?top=100");
+    const topRevenueCourses = response.data;
+    return topRevenueCourses;
+  } catch (error) {
+    console.error("Lỗi khi gọi API lấy top revenue course: ", error);
+    return null;
+  }
+};
+
+export const createCourse = async (courseData, token) => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/courses/",
+      courseData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi thêm khóa học:", error);
+    throw error;
+  }
+};
+
 export const fetchAllUser = async () => {
   try {
     const response = await axiosInstance.get(`/api/users`);
     return response.data;
   } catch (error) {
     console.error("Lỗi khi gọi API lấy danh sách user:", error);
+    throw error;
+  }
+};
+
+export const createSection = async (sectionData, token) => {
+  console.log("Section gửi đi:", sectionData);
+  try {
+    const response = await axiosInstance.post(
+      "/api/sections/",
+      sectionData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi tạo section:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const createLesson = async (lessonData, token) => {
+  console.log("lesson gửi đi:", lessonData);
+
+  try {
+    const response = await axiosInstance.post(
+      "/api/lessons/",
+      lessonData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi tạo lesson:", error.response?.data || error.message);
     throw error;
   }
 };
