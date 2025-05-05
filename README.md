@@ -12,3 +12,4 @@ Web quản lí bán khóa học
 - @shadcn/ui: Xây dựng component
 - dayjs: format ngày giờ
 - react-toastify: Thông báo đẹp
+- react-data-table-component: Phân trang

@@ -57,7 +57,7 @@ export const fetchRevenueByCourse = async (num) => {
 
 export const getRevenueCourses = async () => {
   try {
-    const response = await axiosInstance.get("/api/courses/top-revenue/");
+    const response = await axiosInstance.get("/api/courses/top-revenue/?top=100");
     const topRevenueCourses = response.data;
     return topRevenueCourses;
   } catch (error) {
