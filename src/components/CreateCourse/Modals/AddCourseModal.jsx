@@ -99,7 +99,7 @@ export default function AddCourseModal({ onAdd, children }) {
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-all duration-200" />
                 <Dialog.Content className="fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 bg-white p-0 rounded-xl shadow-2xl overflow-hidden transition-all duration-200">
-                    <div className="bg-gradient-to-r from-purple-600 to-purple-800 p-6 text-white relative">
+                    <div className="bg-gradient-to-r from-purple-400 to-purple-600 p-6 text-white relative">
                         <Dialog.Title className="text-xl font-bold flex items-center">
                             <BookOpen className="mr-2 h-5 w-5" />
                             Thêm khóa học mới
@@ -111,8 +111,8 @@ export default function AddCourseModal({ onAdd, children }) {
 
                     <form onSubmit={handleSubmit} className="p-6 space-y-5">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-purple-800 flex items-center">
-                                <BookOpen className="mr-2 h-4 w-4 text-purple-600" />
+                            <label className="text-sm font-medium text-purple-600 flex items-center">
+                                <BookOpen className="mr-2 h-4 w-4 text-purple-400" />
                                 Tiêu đề khóa học
                             </label>
                             <div className="relative">
@@ -129,8 +129,8 @@ export default function AddCourseModal({ onAdd, children }) {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-purple-800 flex items-center">
-                                <Info className="mr-2 h-4 w-4 text-purple-600" />
+                            <label className="text-sm font-medium text-purple-600 flex items-center">
+                                <Info className="mr-2 h-4 w-4 text-purple-400" />
                                 Mô tả
                             </label>
                             <textarea
@@ -144,8 +144,8 @@ export default function AddCourseModal({ onAdd, children }) {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-purple-800 flex items-center">
-                                <FileImage className="mr-2 h-4 w-4 text-purple-600" />
+                            <label className="text-sm font-medium text-purple-600 flex items-center">
+                                <FileImage className="mr-2 h-4 w-4 text-purple-400" />
                                 Hình ảnh khóa học
                             </label>
                             <div className="relative">
@@ -162,7 +162,7 @@ export default function AddCourseModal({ onAdd, children }) {
                                     className="flex items-center justify-center w-full p-3 border-2 border-dashed border-purple-300 rounded-md bg-purple-50 hover:bg-purple-100 cursor-pointer transition-colors"
                                 >
                                     <FileImage className="h-5 w-5 text-purple-500 mr-2" />
-                                    <span className="text-purple-700">{fileName ? fileName : "Chọn hình ảnh"}</span>
+                                    <span className="text-purple-500">{fileName ? fileName : "Chọn hình ảnh"}</span>
                                 </label>
                             </div>
                         </div>
@@ -179,15 +179,15 @@ export default function AddCourseModal({ onAdd, children }) {
                                             className="sr-only"
                                         />
                                         <div
-                                            className={`w-10 h-5 rounded-full transition-colors ${form.is_paid ? "bg-purple-600" : "bg-gray-300"}`}
+                                            className={`w-10 h-5 rounded-full transition-colors ${form.is_paid ? "bg-purple-400" : "bg-gray-300"}`}
                                         >
                                             <div
                                                 className={`w-4 h-4 rounded-full bg-white transform transition-transform ${form.is_paid ? "translate-x-5" : "translate-x-1"} shadow-md`}
                                             ></div>
                                         </div>
                                     </div>
-                                    <span className="font-medium text-purple-800 flex items-center">
-                                        <DollarSign className={`h-4 w-4 mr-1 ${form.is_paid ? "text-purple-600" : "text-gray-400"}`} />
+                                    <span className="font-medium text-purple-600 flex items-center">
+                                        <DollarSign className={`h-4 w-4 mr-1 ${form.is_paid ? "text-purple-400" : "text-gray-400"}`} />
                                         Khóa học trả phí
                                     </span>
                                 </label>
@@ -206,7 +206,7 @@ export default function AddCourseModal({ onAdd, children }) {
                                             min="0"
                                             step="0.01"
                                         />
-                                        <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-purple-500" />
+                                        <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-purple-300" />
                                     </div>
                                 </div>
                             )}
@@ -215,7 +215,7 @@ export default function AddCourseModal({ onAdd, children }) {
                         <div className="pt-2">
                             <Button
                                 type="submit"
-                                className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-lg transition-all duration-300 hover:shadow-purple-200 hover:shadow-md"
+                                className="w-full bg-gradient-to-r from-purple-400 to-purple-600 hover:from-purple-700 hover:to-purple-900 text-white shadow-lg transition-all duration-300 hover:shadow-purple-200 hover:shadow-md"
                             >
                                 <Save className="mr-2 h-4 w-4" />
                                 Lưu khóa học

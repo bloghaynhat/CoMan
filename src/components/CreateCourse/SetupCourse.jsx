@@ -147,15 +147,15 @@ export default function SetupCourse() {
     return (
         <div className="container mx-auto py-8 px-4 max-w-5xl bg-gradient-to-b from-purple-50 to-white min-h-screen">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                <h1 className="text-3xl font-bold text-purple-800 flex items-center">
+                <h1 className="text-3xl font-bold text-purple-500 flex items-center">
                     <span className="bg-purple-100 p-2 rounded-lg mr-3">
-                        <BookOpen className="h-6 w-6 text-purple-600" />
+                        <BookOpen className="h-6 w-6 text-purple-400" />
                     </span>
                     Thiết lập khóa học #{courseId}
                 </h1>
                 <Button
                     onClick={handleSubmitAll}
-                    className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-lg transition-all duration-300 hover:shadow-purple-200 hover:shadow-md"
+                    className="bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-700 hover:to-purple-900 text-white shadow-lg transition-all duration-300 hover:shadow-purple-200 hover:shadow-md"
                 >
                     <Save className="mr-2 h-4 w-4" />
                     Lưu và trở về
@@ -163,7 +163,7 @@ export default function SetupCourse() {
             </div>
 
             <Card className="mb-8 border-none shadow-lg shadow-purple-100">
-                <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700">
+                <CardHeader className="bg-gradient-to-r from-purple-400 to-purple-500">
                     <CardTitle className="text-xl text-white flex items-center">
                         <Plus className="mr-2 h-5 w-5" />
                         Thêm chương mới
@@ -180,7 +180,7 @@ export default function SetupCourse() {
                         <Button
                             onClick={handleAddSection}
                             disabled={!sectionTitle.trim()}
-                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                            className="bg-purple-400 hover:bg-purple-500 text-white"
                         >
                             <Plus className="mr-2 h-4 w-4" />
                             Thêm chương
@@ -191,10 +191,10 @@ export default function SetupCourse() {
 
             {sections.length > 0 && (
                 <div className="space-y-6">
-                    <h2 className="text-xl font-semibold flex items-center text-purple-800 border-b-2 border-purple-200 pb-2">
-                        <BookOpen className="mr-2 h-5 w-5 text-purple-600" />
+                    <h2 className="text-xl font-semibold flex items-center text-purple-700 border-b-2 border-purple-200 pb-2">
+                        <BookOpen className="mr-2 h-5 w-5 text-purple-500" />
                         Danh sách chương
-                        <span className="ml-2 text-xs bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-bold">
+                        <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold">
                             {sections.length}
                         </span>
                     </h2>
@@ -208,7 +208,7 @@ export default function SetupCourse() {
                             >
                                 <CardHeader
                                     className={`bg-gradient-to-r ${index % 3 === 0
-                                        ? "from-purple-600 to-purple-700"
+                                        ? "from-purple-500 to-purple-600"
                                         : index % 3 === 1
                                             ? "from-blue-600 to-blue-700"
                                             : "from-teal-600 to-teal-700"
