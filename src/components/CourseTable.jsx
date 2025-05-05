@@ -1,6 +1,4 @@
-// CourseTable.jsx
 import { BookOpen, Menu } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 
