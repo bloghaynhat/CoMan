@@ -85,6 +85,16 @@ export const createCourse = async (courseData, token) => {
   }
 };
 
+export const fetchAllUser = async () => {
+  try {
+    const response = await axiosInstance.get(`/api/users`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API lấy danh sách user:", error);
+    throw error;
+  }
+};
+
 export const createSection = async (sectionData, token) => {
   console.log("Section gửi đi:", sectionData);
   try {
@@ -174,3 +184,12 @@ export const getLessons = async (sectionId, token) => {
   return response.json()
 }
 
+export const fetchUserById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/api/users/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API lấy top revenue course:", error);
+    throw error;
+  }
+};
