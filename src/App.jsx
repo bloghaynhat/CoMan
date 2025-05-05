@@ -11,6 +11,7 @@ import Dashboard from "./pages/Admin/DashboardAdmin";
 import KhoaHoc from "./pages/Admin/KhoaHoc";
 import NguoiDung from "./pages/Admin/NguoiDung";
 import ThongKe from "./pages/Admin/ThongKe";
+import SetupCourse from "./components/CreateCourse/SetupCourse";
 
 const router = createBrowserRouter([
   {
@@ -48,7 +49,7 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "admin",
+    path: "/admin",
     element: <RootPage />,
     children: [
       {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: "courses",
         element: <KhoaHoc />,
+      },
+      {
+        path: "courses/:courseId/setup",
+        element: <SetupCourse />,
       },
       {
         path: "users",

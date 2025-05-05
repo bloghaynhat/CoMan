@@ -2,11 +2,18 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createCourse } from "@/api/admin";
-import { UserContext } from "../../context/UserContext";
+import { UserContext } from "../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 export default function AddCourseModal({ onAdd, children }) {
     const [open, setOpen] = useState(false);
     const { user } = useContext(UserContext);
+    const navigate = useNavigate();
+
     const [form, setForm] = useState({
         title: "",
         description: "",
@@ -33,18 +40,45 @@ export default function AddCourseModal({ onAdd, children }) {
         formData.append("image", form.image);
         formData.append("is_paid", form.is_paid);
         formData.append("price", form.price);
-        console.log("Form values:", form);
 
         try {
             const newCourse = await createCourse(formData, token);
-            onAdd(newCourse);
-            setOpen(false);
+            console.log("Khóa học mới:", newCourse);
+
+            try {
+                onAdd(newCourse);
+                setOpen(false);
+                console.log("Khóa học đã được thêm thành công:", newCourse.id);
+
+                navigate(`/admin/courses/${newCourse.id}/setup`);
+                console.log("Khóa học mới:", newCourse);
+
+            } catch (error) {
+                console.error("Lỗi sau khi tạo khóa học:", error);
+                toast.error("Tạo thành công nhưng không chuyển trang!", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
+
         } catch (err) {
-            alert("Thêm khóa học thất bại");
+            console.error("Lỗi khi gọi createCourse:", err);
+            toast.error("Tạo Thất Bại", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         }
     };
-
-
 
     return (
         <Dialog.Root open={open} onOpenChange={setOpen}>

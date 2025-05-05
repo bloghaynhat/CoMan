@@ -66,24 +66,66 @@ export const getRevenueCourses = async () => {
   }
 };
 
-export const createCourse = async (formData, token) => {
+export const createCourse = async (courseData, token) => {
   try {
     const response = await axiosInstance.post(
-      '/api/courses/',
-      formData,
+      "/api/courses/",
+      courseData,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       }
     );
     return response.data;
   } catch (error) {
-    console.error('Lỗi khi thêm khóa học:', error);
+    console.error("Lỗi khi thêm khóa học:", error);
     throw error;
   }
 };
+
+export const createSection = async (sectionData, token) => {
+  console.log("Section gửi đi:", sectionData);
+  try {
+    const response = await axiosInstance.post(
+      "/api/sections/",
+      sectionData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi tạo section:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const createLesson = async (lessonData, token) => {
+  console.log("lesson gửi đi:", lessonData);
+
+  try {
+    const response = await axiosInstance.post(
+      "/api/lessons/",
+      lessonData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi tạo lesson:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 
 
 

@@ -4,7 +4,7 @@ import { PlusCircle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { getRevenueCourses } from "../../api/admin";
 import CourseTable from "@/components/CourseTable";
-import AddCourseModal from "@/components/Modals/AddCourseModal";
+import AddCourseModal from "@/components/CreateCourse/Modals/AddCourseModal";
 
 
 export default function KhoaHoc() {
