@@ -66,14 +66,15 @@ export const getRevenueCourses = async () => {
   }
 };
 
-export const createCourse = async (courseData, token) => {
+export const createCourse = async (formData, token) => {
   try {
     const response = await axiosInstance.post(
       '/api/courses/',
-      courseData,
+      formData,
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       }
     );
@@ -83,4 +84,6 @@ export const createCourse = async (courseData, token) => {
     throw error;
   }
 };
+
+
 

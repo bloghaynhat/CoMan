@@ -7,8 +7,6 @@ import { UserContext } from "../../context/UserContext";
 export default function AddCourseModal({ onAdd, children }) {
     const [open, setOpen] = useState(false);
     const { user } = useContext(UserContext);
-    console.log(user.access_token);
-
     const [form, setForm] = useState({
         title: "",
         description: "",
@@ -29,14 +27,23 @@ export default function AddCourseModal({ onAdd, children }) {
         e.preventDefault();
         const token = user.access_token;
 
+        const formData = new FormData();
+        formData.append("title", form.title);
+        formData.append("description", form.description);
+        formData.append("image", form.image);
+        formData.append("is_paid", form.is_paid);
+        formData.append("price", form.price);
+        console.log("Form values:", form);
+
         try {
-            const newCourse = await createCourse(form, token);
+            const newCourse = await createCourse(formData, token);
             onAdd(newCourse);
             setOpen(false);
         } catch (err) {
             alert("Thêm khóa học thất bại");
         }
     };
+
 
 
     return (
@@ -67,14 +74,16 @@ export default function AddCourseModal({ onAdd, children }) {
                             required
                         />
                         <input
-                            type="url"
-                            name="image"
-                            placeholder="Link ảnh"
-                            value={form.image}
-                            onChange={handleChange}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setForm((prev) => ({
+                                ...prev,
+                                image: e.target.files[0],
+                            }))}
                             className="w-full border p-2 rounded"
                             required
                         />
+
                         <div className="flex items-center gap-3">
                             <label className="flex items-center gap-2">
                                 <input

@@ -1,14 +1,18 @@
-import { BookOpen, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// CourseTable.jsx
+import { BookOpen, Menu } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Button } from './ui/button';
 
 export default function CourseTable({ courses }) {
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    if (isNaN(date)) {
+      return "Invalid Date";
+    }
+    return date.toLocaleDateString();
+  };
+
   return (
     <div className="overflow-auto">
       <table className="w-full">
@@ -35,7 +39,7 @@ export default function CourseTable({ courses }) {
               <td className="text-center p-2">{course.total_enrollments}</td>
               <td className="text-center p-2">{course.total_revenue}</td>
               <td className="text-center p-2 text-sm text-muted-foreground">
-                {course.created_at}
+                {formatDate(course.created_at)}
               </td>
               <td className="text-center p-2">
                 <DropdownMenu>
