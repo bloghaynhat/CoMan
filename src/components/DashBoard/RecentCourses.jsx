@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import dayjs from "dayjs";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function RecentCourses({ courses, isLoadingCourse }) {
   const navigate = useNavigate();
@@ -25,18 +26,15 @@ export default function RecentCourses({ courses, isLoadingCourse }) {
         <div className="space-y-4">
           {isLoadingCourse
             ? Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between animate-pulse"
-                >
+                <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded bg-gray-200" />
+                    <Skeleton className="h-14 w-20 rounded" />
                     <div className="space-y-2">
-                      <div className="h-3 w-36 bg-gray-200 rounded" />
-                      <div className="h-2 w-20 bg-gray-100 rounded" />
+                      <Skeleton className="h-4 w-36" />
+                      <Skeleton className="h-3 w-20" />
                     </div>
                   </div>
-                  <div className="h-6 w-20 bg-gray-200 rounded-full" />
+                  <Skeleton className="h-6 w-20 rounded-full" />
                 </div>
               ))
             : courses.map((course) => (
@@ -48,9 +46,8 @@ export default function RecentCourses({ courses, isLoadingCourse }) {
                     <img
                       src={course.image}
                       alt=""
-                      className=" w-20 rounded flex items-center justify-center"
+                      className="w-20 h-14 object-cover rounded"
                     />
-
                     <div>
                       <p className="font-medium">{course.title}</p>
                       <p className="text-xs text-muted-foreground">
@@ -58,11 +55,9 @@ export default function RecentCourses({ courses, isLoadingCourse }) {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">
-                      {dayjs(course.created_at).format("DD/MM/YYYY")}
-                    </span>
-                  </div>
+                  <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">
+                    {dayjs(course.created_at).format("DD/MM/YYYY")}
+                  </span>
                 </div>
               ))}
         </div>

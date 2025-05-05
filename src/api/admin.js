@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Cấu hình axios
 const axiosInstance = axios.create({
-  baseURL: "https://comanbe.onrender.com/", // Địa chỉ server của bạn
+  baseURL: "http://127.0.0.1:8000", // Địa chỉ server của bạn
   headers: {
     "Content-Type": "application/json",
   },
@@ -81,6 +81,13 @@ export const createCourse = async (courseData, token) => {
     return response.data;
   } catch (error) {
     console.error("Lỗi khi thêm khóa học:", error);
+
+export const fetchAllUser = async () => {
+  try {
+    const response = await axiosInstance.get(`/api/users`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API lấy danh sách user:", error);
     throw error;
   }
 };
@@ -126,6 +133,12 @@ export const createLesson = async (lessonData, token) => {
   }
 };
 
-
-
-
+export const fetchUserById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/api/users/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API lấy top revenue course:", error);
+    throw error;
+  }
+};
