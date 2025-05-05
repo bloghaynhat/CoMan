@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Cấu hình axios
 const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:8000", // Địa chỉ server của bạn
+  baseURL: "https://comanbe.onrender.com/", // Địa chỉ server của bạn
   headers: {
     "Content-Type": "application/json",
   },
@@ -81,6 +81,9 @@ export const createCourse = async (courseData, token) => {
     return response.data;
   } catch (error) {
     console.error("Lỗi khi thêm khóa học:", error);
+    throw error;
+  }
+};
 
 export const fetchAllUser = async () => {
   try {
