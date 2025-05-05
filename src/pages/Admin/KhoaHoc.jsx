@@ -53,10 +53,6 @@ export default function KhoaHoc() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Tất cả khóa học</CardTitle>
-          <CardDescription>Quản lý tất cả các khóa học của bạn</CardDescription>
-        </CardHeader>
         <CardContent>
           <CourseTable courses={courses} />
         </CardContent>

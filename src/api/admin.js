@@ -125,7 +125,52 @@ export const createLesson = async (lessonData, token) => {
     throw error;
   }
 };
+export const getCourse = async (courseId) => {
+  try {
+    const response = await axiosInstance.get(`api/courses/${courseId}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy dữ liệu khóa học:", error);
+    throw error;
+  }
+};
+export const getCourseData = async (courseId) => {
+  try {
+    const response = await axiosInstance.get(`api/courses/${courseId}/sections-with-lessons/`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy dữ liệu khóa học:", error);
+    throw error;
+  }
+};
 
+export const deleteSection = async (sectionId, token) => {
+  const response = await fetch(`/api/sections/${sectionId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  return response.json()
+}
 
+export const deleteLesson = async (lessonId, token) => {
+  const response = await fetch(`/api/lessons/${lessonId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  return response.json()
+}
 
+export const getSections = async (courseId, token) => {
+  const response = await fetch(`/api/courses/${courseId}/sections`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  return response.json()
+}
+
+export const getLessons = async (sectionId, token) => {
+  const response = await fetch(`/api/sections/${sectionId}/lessons`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  return response.json()
+}
 

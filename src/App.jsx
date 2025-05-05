@@ -12,6 +12,7 @@ import KhoaHoc from "./pages/Admin/KhoaHoc";
 import NguoiDung from "./pages/Admin/NguoiDung";
 import ThongKe from "./pages/Admin/ThongKe";
 import SetupCourse from "./components/CreateCourse/SetupCourse";
+import EditCourse from "./components/CreateCourse/EditCourse";
 
 const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "courses/:courseId/setup",
         element: <SetupCourse />,
+      },
+      {
+        path: "courses/:courseId/edit",
+        element: <EditCourse />,
       },
       {
         path: "users",
