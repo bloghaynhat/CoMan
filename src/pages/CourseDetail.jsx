@@ -352,12 +352,15 @@ const CourseDetail = () => {
                         {/* Course title and image */}
                         <div className="bg-white rounded-lg shadow-md overflow-hidden mb-4">
                             <div className="relative">
-                                <img
+                                {/* <img
                                     src={course.image || "/placeholder.svg?height=200&width=400"}
                                     alt={course.title}
                                     className="w-full h-48 object-cover"
-                                />
-                                <div className="absolute top-2 left-2">
+                                /> */}
+
+                            </div>
+                            <div className="p-4">
+                                <div className="absolute top-10 right-96">
                                     <span
                                         className={`px-3 py-1 rounded-full text-sm font-medium ${isPaid
                                             ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
@@ -367,8 +370,6 @@ const CourseDetail = () => {
                                         {isPaid ? "Premium" : "Free"}
                                     </span>
                                 </div>
-                            </div>
-                            <div className="p-4">
                                 <h1 className="text-xl font-bold text-emerald-800 mb-2">{course.title}</h1>
 
                                 <div className="flex flex-wrap gap-2 text-sm text-emerald-700">
@@ -411,71 +412,11 @@ const CourseDetail = () => {
                             </div>
                         </div>
 
-                        {/* About This Course section */}
+                        {/* About This Course section
                         <div className="bg-gradient-to-r from-emerald-50 to-sky-50 p-4 rounded-lg mb-4 shadow-md border border-emerald-100">
                             <h2 className="text-lg font-semibold text-emerald-800 mb-2">About This Course</h2>
                             <p className="text-gray-700 text-sm leading-relaxed">{course.description}</p>
-                        </div>
-
-                        {/* Enrollment/Payment section */}
-                        {isPaid ? (
-                            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg p-4 flex flex-col justify-between items-center text-white shadow-lg mb-4">
-                                <div className="mb-3 text-center">
-                                    <p className="text-white/80 text-sm">Giá:</p>
-                                    <p className="text-2xl font-bold">{formatPrice(course.price)}</p>
-                                </div>
-                                {hasAccess ? (
-                                    <span className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block text-center">
-                                        Đã mua
-                                    </span>
-                                ) : (
-                                    <>
-                                        <button
-                                            onClick={handleEnroll}
-                                            className="w-full px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
-                                        >
-                                            Đăng ký ngay
-                                        </button>
-
-                                        <ConfirmPayment
-                                            show={showConfirm}
-                                            onClose={() => setShowConfirm(false)}
-                                            user={user}
-                                            course={course}
-                                            onSuccess={handlePaymentSuccess}
-                                        />
-                                    </>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-lg p-4 flex flex-col justify-between items-center text-white shadow-lg mb-4">
-                                <div className="mb-3 text-center">
-                                    <p className="text-white/80 text-sm">Khóa học miễn phí:</p>
-                                    <p className="text-2xl font-bold">Miễn phí</p>
-                                </div>
-                                {hasAccess ? (
-                                    <span className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block text-center">
-                                        Đã đăng ký
-                                    </span>
-                                ) : (
-                                    <>
-                                        <button
-                                            onClick={handleEnroll}
-                                            className="w-full px-4 py-2 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors duration-300 font-medium shadow-md"
-                                        >
-                                            Đăng ký ngay
-                                        </button>
-                                        <ConfirmPayment
-                                            show={showConfirm}
-                                            onClose={() => setShowConfirm(false)}
-                                            user={user}
-                                            course={course}
-                                            onSuccess={handlePaymentSuccess}
-                                        />
-                                    </>
-                                )}
-                            </div>
-                        )}
+                        </div> */}
 
                         {/* Course content section */}
                         <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -616,6 +557,66 @@ const CourseDetail = () => {
                                 )}
                             </div>
                         </div>
+                        {/* Enrollment/Payment section */}
+                        {isPaid ? (
+                            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg p-4 flex flex-col justify-between items-center text-white shadow-lg mb-4">
+                                <div className="mb-3 text-center">
+                                    <p className="text-white/80 text-sm">Giá:</p>
+                                    <p className="text-2xl font-bold">{formatPrice(course.price)}</p>
+                                </div>
+                                {hasAccess ? (
+                                    <span className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block text-center">
+                                        Đã mua
+                                    </span>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={handleEnroll}
+                                            className="w-full px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
+                                        >
+                                            Đăng ký ngay
+                                        </button>
+
+                                        <ConfirmPayment
+                                            show={showConfirm}
+                                            onClose={() => setShowConfirm(false)}
+                                            user={user}
+                                            course={course}
+                                            onSuccess={handlePaymentSuccess}
+                                        />
+                                    </>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-lg p-4 flex flex-col justify-between items-center text-white shadow-lg mb-4">
+                                <div className="mb-3 text-center">
+                                    <p className="text-white/80 text-sm">Khóa học miễn phí:</p>
+                                    <p className="text-2xl font-bold">Miễn phí</p>
+                                </div>
+                                {hasAccess ? (
+                                    <span className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block text-center">
+                                        Đã đăng ký
+                                    </span>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={handleEnroll}
+                                            className="w-full px-4 py-2 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors duration-300 font-medium shadow-md"
+                                        >
+                                            Đăng ký ngay
+                                        </button>
+                                        <ConfirmPayment
+                                            show={showConfirm}
+                                            onClose={() => setShowConfirm(false)}
+                                            user={user}
+                                            course={course}
+                                            onSuccess={handlePaymentSuccess}
+                                        />
+                                    </>
+                                )}
+                            </div>
+                        )}
+
                     </div>
                 </div>
             </div>

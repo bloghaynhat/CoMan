@@ -3,9 +3,23 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Button } from './ui/button';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { UserContext } from '@/context/UserContext';
+import { deleteCourse } from '@/api/admin';
 
 export default function CourseTable({ courses }) {
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
+  const handleDelete = async () => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) {
+      try {
+        await deleteCourse(course.id, token);
+        onDeleted?.();
+      } catch (error) {
+        alert("Xóa khóa học thất bại.");
+      }
+    }
+  };
   const customStyles = {
     rows: {
       style: {
@@ -85,7 +99,23 @@ export default function CourseTable({ courses }) {
               Xem chi tiết
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={async () => {
+                if (window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) {
+                  try {
+                    await deleteCourse(row.course_id, user.access_token);
+                    alert("Xóa thành công!");
+                    window.location.reload();
+                  } catch (err) {
+                    console.error("Lỗi xóa khóa học:", err);
+                    alert("Xóa khóa học thất bại.");
+                  }
+                }
+              }}
+            >
+              Xóa
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),

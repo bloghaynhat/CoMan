@@ -100,7 +100,7 @@ const CourseDetailViewer = () => {
     }, [id])
 
     const handleClose = () => {
-        navigate(-1)
+        navigate("/admin/courses")
     }
 
     const toggleSection = (sectionId) => {
