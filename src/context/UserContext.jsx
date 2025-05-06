@@ -1,12 +1,16 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { refreshToken, getUserInfo, logout } from "../api/auth";
 
+// Tạo context
 export const UserContext = createContext();
 
+// Cung cấp context cho ứng dụng
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); // user: { firstname, lastname, role }
 
+  // Lấy dữ liệu người dùng từ localStorage khi app load
   useEffect(() => {
-    // Lấy dữ liệu từ localStorage khi app load
     const first_name = localStorage.getItem("first_name");
     const last_name = localStorage.getItem("last_name");
     const role = localStorage.getItem("role");
@@ -17,11 +21,10 @@ const UserProvider = ({ children }) => {
     }
   }, []);
 
+  // Hàm loginUser để lưu thông tin người dùng vào context và localStorage
   const loginUser = (userData) => {
-    // Lưu vào context
     setUser(userData);
 
-    // Lưu vào localStorage
     localStorage.setItem("first_name", userData.first_name);
     localStorage.setItem("last_name", userData.last_name);
     localStorage.setItem("role", userData.role);
@@ -30,17 +33,42 @@ const UserProvider = ({ children }) => {
     localStorage.setItem("refresh_token", userData.refresh_token);
   };
 
+  // Hàm logoutUser để xóa thông tin người dùng và localStorage
   const logoutUser = () => {
     setUser(null);
-    localStorage.clear(); // hoặc chỉ xóa các key liên quan
-
+    localStorage.clear();
     window.location.href = "/"; // Điều hướng về trang chủ và tải lại trang
   };
 
+  // Hàm cập nhật thông tin người dùng sau khi refresh token
+  const tryRefreshUser = async () => {
+    try {
+      // Refresh token
+      const { access_token } = await refreshToken();
+
+      // Lưu token mới vào axios instance
+      axios.defaults.headers["Authorization"] = `Bearer ${access_token}`;
+
+      // Lấy thông tin người dùng
+      const userInfo = await getUserInfo();
+
+      // Lưu thông tin người dùng vào context và localStorage
+      setUser(userInfo);
+      localStorage.setItem("first_name", userInfo.first_name);
+      localStorage.setItem("last_name", userInfo.last_name);
+      localStorage.setItem("role", userInfo.role);
+      localStorage.setItem("id", userInfo.id);
+    } catch (error) {
+      logoutUser(); // Nếu không refresh được, đăng xuất
+      console.error("Error refreshing user info: ", error);
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, loginUser, logoutUser }}>
-      {" "}
-      {children}{" "}
+    <UserContext.Provider
+      value={{ user, loginUser, logoutUser, tryRefreshUser }}
+    >
+      {children}
     </UserContext.Provider>
   );
 };

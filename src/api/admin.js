@@ -1,12 +1,5 @@
 import axios from "axios";
-
-// Cấu hình axios
-const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:8000", // Địa chỉ server của bạn
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import axiosInstance from "./axiosInstance";
 
 export const fetchDashboardStats = async () => {
   try {
