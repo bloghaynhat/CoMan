@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserContext } from "@/context/UserContext";
 
-const CourseDetailViewer = () => {
+const CourseEditor = () => {
     const { courseId } = useParams();
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
@@ -164,4 +164,4 @@ const CourseDetailViewer = () => {
     );
 };
 
-export default CourseDetailViewer;
+export default CourseEditor;

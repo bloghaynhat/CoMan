@@ -1,5 +1,3 @@
-"use client"
-
 import { useContext, useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { UserContext } from "../context/UserContext"
@@ -119,7 +117,6 @@ const CourseDetail = () => {
                 setActiveSection(data[0].id)
             }
 
-            // Set the first lesson as selected by default if available
             if (allLessons.length > 0) {
                 setSelectedLesson(allLessons[0])
             }
@@ -313,9 +310,9 @@ const CourseDetail = () => {
                 </svg>
             </button>
 
-            {/* Main content area - YouTube-like layout */}
+            {/* Main content area */}
             <div className="flex flex-col lg:flex-row gap-6">
-                {/* Left side - Lesson content (like YouTube video) */}
+                {/* Left side - Lesson content*/}
                 <div className="lg:w-3/4 order-2 lg:order-1">
                     {selectedLesson ? (
                         renderLessonContent()
@@ -363,8 +360,8 @@ const CourseDetail = () => {
                                 <div className="absolute top-2 left-2">
                                     <span
                                         className={`px-3 py-1 rounded-full text-sm font-medium ${isPaid
-                                                ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
-                                                : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
+                                            ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
+                                            : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
                                             }`}
                                     >
                                         {isPaid ? "Premium" : "Free"}

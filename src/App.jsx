@@ -12,8 +12,8 @@ import KhoaHoc from "./pages/Admin/KhoaHoc";
 import NguoiDung from "./pages/Admin/NguoiDung";
 import ThongKe from "./pages/Admin/ThongKe";
 import SetupCourse from "./components/CreateCourse/SetupCourse";
-import DisplaySectionsAndLessons from "./components/CreateCourse/CourseDetailViewer";
-import CourseDetailViewer from "./components/CreateCourse/CourseDetailViewer";
+
+import CourseEditor from "./components/CreateCourse/CourseEditor";
 
 const router = createBrowserRouter([
   {
@@ -68,7 +68,7 @@ const router = createBrowserRouter([
       },
       {
         path: "courses/:courseId/edit",
-        element: <CourseDetailViewer />,
+        element: <CourseEditor />,
       },
       {
         path: "users",
