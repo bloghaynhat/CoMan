@@ -2,8 +2,10 @@ import { BookOpen, Menu } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 import DataTable from 'react-data-table-component';
+import { useNavigate } from 'react-router-dom';
 
 export default function CourseTable({ courses }) {
+  const navigate = useNavigate();
   const customStyles = {
     rows: {
       style: {
@@ -76,7 +78,9 @@ export default function CourseTable({ courses }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(`/admin/courses/${row.course_id}/edit`)}>
+              Chỉnh sửa
+            </DropdownMenuItem>
             <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
