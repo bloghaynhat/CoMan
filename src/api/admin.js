@@ -62,7 +62,7 @@ export const getCourseById = async(id) => {
         const response = await axiosInstance.get(`/api/courses/${id}`);
         return response.data;
     } catch (error) {
-        console.error("Lỗi khi lấy thông tin khóa học:", error.response ? .data || error.message);
+        console.error("Lỗi khi lấy thông tin khóa học:", error.response ?.data || error.message);
         throw error;
     }
 };
@@ -110,7 +110,7 @@ export const createSection = async(sectionData, token) => {
         );
         return response.data;
     } catch (error) {
-        console.error("Lỗi tạo section:", error.response ? .data || error.message);
+        console.error("Lỗi tạo section:", error.response ?.data || error.message);
         throw error;
     }
 };
@@ -129,7 +129,7 @@ export const createLesson = async(lessonData, token) => {
         );
         return response.data;
     } catch (error) {
-        console.error("Lỗi tạo lesson:", error.response ? .data || error.message);
+        console.error("Lỗi tạo lesson:", error.response ?.data || error.message);
         throw error;
     }
 };
@@ -141,37 +141,6 @@ export const fetchUserById = async(id) => {
     } catch (error) {
         console.error("Lỗi khi gọi API lấy top revenue course:", error);
         throw error;
-    }
-};
-
-// Hàm thay đổi trạng thái của người dùng
-export const ChangeUserStatus = async(userId, currentStatus) => {
-    try {
-        // Lấy token từ localStorage
-        const token = localStorage.getItem("access_token");
-
-        if (!token) {
-            throw new Error("No access token found.");
-        }
-
-        // Gửi request PATCH để cập nhật trạng thái is_active
-        const response = await axiosInstance.patch(
-            `/api/users/${userId}/`, { is_active: !currentStatus }, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Thêm token vào header
-                },
-            }
-        );
-
-        // Nếu thành công, trả về true
-        if (response.status === 200) {
-            return true;
-        } else {
-            return false;
-        }
-    } catch (error) {
-        console.error("Error updating user status:", error);
-        return false;
     }
 };
 
@@ -226,7 +195,7 @@ export const deleteSection = async(sectionId, token) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Lỗi khi xóa section:", error.response ? .data || error.message);
+        console.error("Lỗi khi xóa section:", error.response ?.data || error.message);
         throw error;
     }
 };
@@ -238,7 +207,7 @@ export const deleteLesson = async(lessonId, token) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Lỗi khi xóa section:", error.response ? .data || error.message);
+        console.error("Lỗi khi xóa section:", error.response ?.data || error.message);
         throw error;
     }
 };
