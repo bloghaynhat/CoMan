@@ -49,7 +49,7 @@ export default function RevenueChart({ courses, isLoadingRevenue }) {
                 </div>
               ))
             : // Show course details after loading
-              sortedCourses.map((course) => (
+              sortedCourses.slice(0, 5).map((course) => (
                 <div key={course.course_id} className="space-y-4">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">{course.title}</p>
@@ -63,7 +63,7 @@ export default function RevenueChart({ courses, isLoadingRevenue }) {
                       style={{
                         width: `${
                           course.total_revenue
-                            ? (course.total_revenue / 5000000) * 100 // Tính tỷ lệ phần trăm doanh thu
+                            ? (course.total_revenue / 10000000) * 100 // Tính tỷ lệ phần trăm doanh thu
                             : 0
                         }%`, // Nếu không có doanh thu, chiều rộng mặc định là 0%
                       }}

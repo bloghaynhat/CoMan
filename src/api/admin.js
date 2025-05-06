@@ -36,11 +36,9 @@ export const fetchTotalStudentCourseByDate = async (num) => {
   }
 };
 
-export const fetchRevenueByCourse = async (num) => {
+export const fetchRevenueByCourse = async () => {
   try {
-    const response = await axiosInstance.get(
-      `/api/courses/top-revenue/?top=${num}`
-    );
+    const response = await axiosInstance.get(`/api/courses/top-revenue/`);
     return response.data;
   } catch (error) {
     console.error("Lỗi khi gọi API lấy top revenue course:", error);
