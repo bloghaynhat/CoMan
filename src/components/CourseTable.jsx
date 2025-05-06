@@ -81,7 +81,9 @@ export default function CourseTable({ courses }) {
             <DropdownMenuItem onClick={() => navigate(`/admin/courses/${row.course_id}/edit`)}>
               Chỉnh sửa
             </DropdownMenuItem>
-            <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(`/admin/courses/${row.course_id}/view`)}>
+              Xem chi tiết
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
           </DropdownMenuContent>

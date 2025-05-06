@@ -66,6 +66,17 @@ export const getRevenueCourses = async () => {
   }
 };
 
+export const getCourseById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/api/courses/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin khóa học:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
 export const createCourse = async (courseData, token) => {
   try {
     const response = await axiosInstance.post(
