@@ -294,11 +294,6 @@ const CourseDetail = () => {
         )
     }
 
-    // Debug information
-    console.log("selectedLesson:", selectedLesson)
-    console.log("isPaid:", isPaid)
-    console.log("hasAccess:", hasAccess)
-
     return (
         <div
             className={`container mx-auto p-4 md:p-6 max-w-7xl bg-gradient-to-br from-${themeColors.light}-50 to-white rounded-xl shadow-lg relative`}
@@ -318,114 +313,174 @@ const CourseDetail = () => {
                 </svg>
             </button>
 
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-emerald-800 mb-4 pb-2 border-b-2 border-emerald-200 flex items-center">
-                    {course.title}
-                    <span
-                        className={`ml-3 px-3 py-1 rounded-full text-sm font-medium ${isPaid
-                            ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
-                            : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
-                            }`}
-                    >
-                        {isPaid ? "Premium" : "Free"}
-                    </span>
-                </h1>
-
-                <div className="flex flex-wrap gap-6 mb-6 text-emerald-700 bg-sky-50 p-4 rounded-lg shadow-inner">
-                    <div className="flex items-center gap-2">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-emerald-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                            />
-                        </svg>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-emerald-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                            />
-                        </svg>
-                        <span>{getTotalLessons()} lessons</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-emerald-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                        </svg>
-                        <span>{formatDate(course.created_at)}</span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Main content area*/}
+            {/* Main content area - YouTube-like layout */}
             <div className="flex flex-col lg:flex-row gap-6">
-                {/* Left side - Lesson content*/}
+                {/* Left side - Lesson content (like YouTube video) */}
                 <div className="lg:w-3/4 order-2 lg:order-1">
                     {selectedLesson ? (
                         renderLessonContent()
                     ) : (
-                        <div className="relative rounded-xl overflow-hidden mb-6 shadow-lg">
-                            <img
-                                src={course.image || "/placeholder.svg?height=400&width=600"}
-                                alt={course.title}
-                                className="w-full h-72 md:h-96 object-cover transition-transform duration-700 hover:scale-105"
-                            />
-                            <div className="absolute inset-0"></div>
-
-                            <div className="absolute top-4 left-4">
-                                <span
-                                    className={`px-3 py-1 rounded-full text-sm font-medium ${isPaid
-                                        ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
-                                        : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
-                                        }`}
+                        <div className="flex items-center justify-center h-full">
+                            <div className="text-center p-8 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-16 w-16 mx-auto text-gray-400 mb-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
                                 >
-                                    {isPaid ? "Premium" : "Free"}
-                                </span>
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={1.5}
+                                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                    />
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={1.5}
+                                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                                <h3 className="text-lg font-medium text-gray-700 mb-2">Select a lesson to start learning</h3>
+                                <p className="text-gray-500">Choose a lesson from the course content on the right to begin.</p>
                             </div>
-                        </div>
-                    )}
-
-                    {!selectedLesson && (
-                        <div className="bg-gradient-to-r from-emerald-50 to-sky-50 p-6 rounded-lg mb-8 shadow-md border border-emerald-100">
-                            <h2 className="text-xl font-semibold text-emerald-800 mb-3">About This Course</h2>
-                            <p className="text-gray-700 leading-relaxed">{course.description}</p>
                         </div>
                     )}
                 </div>
 
-                {/* Right side - Course content*/}
+                {/* Right side - Course content and image */}
                 <div className="lg:w-1/4 order-1 lg:order-2">
-                    <div className="sticky top-4">
+                    <div className="space-y-4">
+                        {/* Course title and image */}
+                        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+                            <div className="relative">
+                                <img
+                                    src={course.image || "/placeholder.svg?height=200&width=400"}
+                                    alt={course.title}
+                                    className="w-full h-48 object-cover"
+                                />
+                                <div className="absolute top-2 left-2">
+                                    <span
+                                        className={`px-3 py-1 rounded-full text-sm font-medium ${isPaid
+                                                ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
+                                                : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
+                                            }`}
+                                    >
+                                        {isPaid ? "Premium" : "Free"}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="p-4">
+                                <h1 className="text-xl font-bold text-emerald-800 mb-2">{course.title}</h1>
+
+                                <div className="flex flex-wrap gap-2 text-sm text-emerald-700">
+                                    <div className="flex items-center gap-1">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4 text-emerald-500"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                            />
+                                        </svg>
+                                        <span>{getTotalLessons()} lessons</span>
+                                    </div>
+
+                                    <div className="flex items-center gap-1">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4 text-emerald-500"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                            />
+                                        </svg>
+                                        <span>{formatDate(course.created_at)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* About This Course section */}
+                        <div className="bg-gradient-to-r from-emerald-50 to-sky-50 p-4 rounded-lg mb-4 shadow-md border border-emerald-100">
+                            <h2 className="text-lg font-semibold text-emerald-800 mb-2">About This Course</h2>
+                            <p className="text-gray-700 text-sm leading-relaxed">{course.description}</p>
+                        </div>
+
+                        {/* Enrollment/Payment section */}
+                        {isPaid ? (
+                            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg p-4 flex flex-col justify-between items-center text-white shadow-lg mb-4">
+                                <div className="mb-3 text-center">
+                                    <p className="text-white/80 text-sm">Giá:</p>
+                                    <p className="text-2xl font-bold">{formatPrice(course.price)}</p>
+                                </div>
+                                {hasAccess ? (
+                                    <span className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block text-center">
+                                        Đã mua
+                                    </span>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={handleEnroll}
+                                            className="w-full px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
+                                        >
+                                            Đăng ký ngay
+                                        </button>
+
+                                        <ConfirmPayment
+                                            show={showConfirm}
+                                            onClose={() => setShowConfirm(false)}
+                                            user={user}
+                                            course={course}
+                                            onSuccess={handlePaymentSuccess}
+                                        />
+                                    </>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-lg p-4 flex flex-col justify-between items-center text-white shadow-lg mb-4">
+                                <div className="mb-3 text-center">
+                                    <p className="text-white/80 text-sm">Khóa học miễn phí:</p>
+                                    <p className="text-2xl font-bold">Miễn phí</p>
+                                </div>
+                                {hasAccess ? (
+                                    <span className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block text-center">
+                                        Đã đăng ký
+                                    </span>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={handleEnroll}
+                                            className="w-full px-4 py-2 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors duration-300 font-medium shadow-md"
+                                        >
+                                            Đăng ký ngay
+                                        </button>
+                                        <ConfirmPayment
+                                            show={showConfirm}
+                                            onClose={() => setShowConfirm(false)}
+                                            user={user}
+                                            course={course}
+                                            onSuccess={handlePaymentSuccess}
+                                        />
+                                    </>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Course content section */}
                         <div className="bg-white rounded-lg shadow-md overflow-hidden">
                             <div className="bg-cyan-50 p-3 border-b-2 border-cyan-200 flex items-center">
                                 <svg
@@ -448,7 +503,7 @@ const CourseDetail = () => {
                                 </span>
                             </div>
 
-                            <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+                            <div className="max-h-[calc(100vh-600px)] overflow-y-auto">
                                 {sections.length > 0 ? (
                                     <div>
                                         {sections.map((section) => {
@@ -567,70 +622,6 @@ const CourseDetail = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Enrollment/Payment section - Moved outside the flex container */}
-            {!selectedLesson && (
-                <div className="mt-8 z-50 relative">
-                    {isPaid ? (
-                        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg">
-                            <div>
-                                <p className="text-white/80 mb-1">Giá:</p>
-                                <p className="text-3xl font-bold">{formatPrice(course.price)}</p>
-                            </div>
-                            {hasAccess ? (
-                                <span className="mt-4 md:mt-0 px-8 py-3 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block">
-                                    Đã mua
-                                </span>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={handleEnroll}
-                                        className="mt-4 md:mt-0 px-8 py-3 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
-                                    >
-                                        Đăng ký ngay
-                                    </button>
-
-                                    <ConfirmPayment
-                                        show={showConfirm}
-                                        onClose={() => setShowConfirm(false)}
-                                        user={user}
-                                        course={course}
-                                        onSuccess={handlePaymentSuccess}
-                                    />
-                                </>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg">
-                            <div>
-                                <p className="text-white/80 mb-1">Khóa học miễn phí:</p>
-                                <p className="text-3xl font-bold">Miễn phí</p>
-                            </div>
-                            {hasAccess ? (
-                                <span className="mt-4 md:mt-0 px-8 py-3 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block">
-                                    Đã đăng ký
-                                </span>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={handleEnroll}
-                                        className="mt-4 md:mt-0 px-8 py-3 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors duration-300 font-medium shadow-md"
-                                    >
-                                        Đăng ký ngay
-                                    </button>
-                                    <ConfirmPayment
-                                        show={showConfirm}
-                                        onClose={() => setShowConfirm(false)}
-                                        user={user}
-                                        course={course}
-                                        onSuccess={handlePaymentSuccess}
-                                    />
-                                </>
-                            )}
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     )
 }
