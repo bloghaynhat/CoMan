@@ -24,8 +24,31 @@ export default function KhoaHoc() {
   }, []);
 
   if (loading) {
-    return <div>Đang tải...</div>;
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="flex items-center justify-between">
+          <div className="h-8 w-1/3 bg-gray-300 rounded-md"></div>
+          <div className="h-10 w-40 bg-gray-300 rounded-md"></div>
+        </div>
+
+        <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
+          <div className="h-6 w-1/4 bg-gray-300 rounded-md"></div>
+          <div className="h-4 w-1/2 bg-gray-200 rounded-md mb-4"></div>
+
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex justify-between items-center border-b py-4">
+              <div className="h-6 w-1/4 bg-gray-200 rounded-md"></div>
+              <div className="h-6 w-12 bg-gray-200 rounded-md"></div>
+              <div className="h-6 w-16 bg-gray-200 rounded-md"></div>
+              <div className="h-6 w-24 bg-gray-200 rounded-md"></div>
+              <div className="h-6 w-8 bg-gray-200 rounded-md"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
