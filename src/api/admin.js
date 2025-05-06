@@ -66,6 +66,17 @@ export const getRevenueCourses = async () => {
   }
 };
 
+export const getCourseById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/api/courses/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin khóa học:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
 export const createCourse = async (courseData, token) => {
   try {
     const response = await axiosInstance.post(
@@ -117,7 +128,6 @@ export const createSection = async (sectionData, token) => {
 
 export const createLesson = async (lessonData, token) => {
   console.log("lesson gửi đi:", lessonData);
-
   try {
     const response = await axiosInstance.post(
       "/api/lessons/",
@@ -142,6 +152,48 @@ export const fetchUserById = async (id) => {
     return response.data;
   } catch (error) {
     console.error("Lỗi khi gọi API lấy top revenue course:", error);
+    throw error;
+  }
+};
+
+export const getchSectionsWithLessons = async (courseId, token) => {
+  try {
+    const response = await axiosInstance.get(
+      `/api/courses/${courseId}/sections-with-lessons/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  }
+  catch (error) {
+    console.error("Lỗi khi gọi API lấy danh sách sections:", error);
+    throw error;
+  }
+};
+
+export const deleteSection = async (sectionId, token) => {
+  try {
+    const response = await axiosInstance.delete(`/api/sections/${sectionId}/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  }
+  catch (error) {
+    console.error("Lỗi khi xóa section:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const deleteLesson = async (lessonId, token) => {
+  try {
+    const response = await axiosInstance.delete(`/api/lessons/${lessonId}/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  }
+  catch (error) {
+    console.error("Lỗi khi xóa section:", error.response?.data || error.message);
     throw error;
   }
 };

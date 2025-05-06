@@ -13,6 +13,9 @@ import NguoiDung from "./pages/Admin/NguoiDung";
 import ThongKe from "./pages/Admin/ThongKe";
 import SetupCourse from "./components/CreateCourse/SetupCourse";
 
+import CourseEditor from "./components/CreateCourse/CourseEditor";
+import CourseDetailViewer from "./components/CreateCourse/CourseDetailViewer";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -63,6 +66,14 @@ const router = createBrowserRouter([
       {
         path: "courses/:courseId/setup",
         element: <SetupCourse />,
+      },
+      {
+        path: "courses/:courseId/edit",
+        element: <CourseEditor />,
+      },
+      {
+        path: "courses/:id/view",
+        element: <CourseDetailViewer />,
       },
       {
         path: "users",
