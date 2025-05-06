@@ -12,6 +12,13 @@ import { useEffect, useState } from "react";
 import { fetchAllUser } from "@/api/admin";
 
 export default function NguoiDung() {
+  // Thêm title cho trang
+  useEffect(() => {
+    document.title = "Quản lí người dùng";
+    return () => {
+      document.title = "Coman"; // Reset title khi unmount
+    };
+  }, []);
   const [users, setUsers] = useState([]);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 

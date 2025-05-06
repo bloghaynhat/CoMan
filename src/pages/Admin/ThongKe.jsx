@@ -2,8 +2,17 @@ import { BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MonthlyChart from "@/components/ThongKe/MonthlyChart";
 import TransactionTable from "@/components/ThongKe/TransactionTable";
+import { useEffect, useState } from "react";
+import { fetchTransaction } from "@/api/admin";
 
 export default function ThongKe() {
+  // Thêm title cho trang
+  useEffect(() => {
+    document.title = "Thống kê";
+    return () => {
+      document.title = "Coman"; // Reset title khi unmount
+    };
+  }, []);
   const monthlyRevenue = [
     { month: "Tháng 1", revenue: 32500000 },
     { month: "Tháng 2", revenue: 36800000 },
@@ -12,6 +21,13 @@ export default function ThongKe() {
     { month: "Tháng 5", revenue: 45200000 },
     { month: "Tháng 6", revenue: 52100000 },
   ];
+
+  const [transactions, setTransactions] = useState([]);
+  useEffect(() => {
+    fetchTransaction().then((data) => {
+      setTransactions(data);
+    });
+  }, []);
 
   const recentTransactions = [
     {
@@ -68,7 +84,7 @@ export default function ThongKe() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <MonthlyChart monthlyRevenue={monthlyRevenue} />
-        <TransactionTable transactions={recentTransactions} />
+        <TransactionTable transactions={transactions} />
       </div>
     </div>
   );
