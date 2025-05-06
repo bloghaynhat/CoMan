@@ -35,9 +35,7 @@ export default function CourseTable({ courses }) {
     }
     return date.toLocaleDateString();
   };
-  const handleEdit = (courseId) => {
-    navigate(`/admin/courses/${courseId}/edit`);
-  };
+
   const columns = [
     {
       name: 'Tên khóa học',
@@ -80,7 +78,7 @@ export default function CourseTable({ courses }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handleEdit(row.course_id)}>
+            <DropdownMenuItem onClick={() => navigate(`/admin/courses/${row.course_id}/edit`)}>
               Chỉnh sửa
             </DropdownMenuItem>
             <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
