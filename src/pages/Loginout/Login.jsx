@@ -1,9 +1,17 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login, getUserInfo } from "../../api/auth";
 import { UserContext } from "../../context/UserContext";
 
 const Login = () => {
+  // Thêm title cho trang
+  useEffect(() => {
+    document.title = "Đăng nhập";
+    return () => {
+      document.title = "Coman"; // Reset title khi unmount
+    };
+  }, []);
+
   const { loginUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

@@ -4,6 +4,13 @@ import Banner from "../components/Banner";
 import axios from "axios";
 
 const TrangChu = () => {
+  // Thêm title cho trang
+  useEffect(() => {
+    document.title = "Trang chủ";
+    return () => {
+      document.title = "Coman"; // Reset title khi unmount
+    };
+  }, []);
   const [courses, setCourses] = useState([]);
   const [freeCourse, setFreeCourse] = useState([]);
   const [paidCourse, setPaidCourse] = useState([]);
