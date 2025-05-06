@@ -11,3 +11,5 @@ Web quản lí bán khóa học
 - axios jwt-decode: xử lí api và jwt
 - @shadcn/ui: Xây dựng component
 - dayjs: format ngày giờ
+- react-toastify: Thông báo đẹp
+- react-data-table-component: Phân trang

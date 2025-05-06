@@ -1,7 +1,7 @@
 import React from 'react';
 
 const PreviewPlayer = ({ videoId }) => {
-    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`; // Lấy thumbnail từ YouTube
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 
     return (
         <div className="relative w-full aspect-video">

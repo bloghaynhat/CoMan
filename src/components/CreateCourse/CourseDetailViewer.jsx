@@ -1,13 +1,10 @@
 import { useContext, useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { UserContext } from "../context/UserContext"
-import PreviewPlayer from "../components/PreviewPlayer"
-import axios from "axios"
-import ConfirmPayment from "../components/ConfirmPayment"
+import { UserContext } from "@/context/UserContext"
+import { getCourseById, getRevenueCourses, getchSectionsWithLessons } from "../../api/admin"
 
-const CourseDetail = () => {
-    const { user, setUser } = useContext(UserContext)
-    const [showConfirm, setShowConfirm] = useState(false)
+const CourseDetailViewer = () => {
+    const { user } = useContext(UserContext)
     const { id } = useParams()
     const navigate = useNavigate()
     const [sections, setSections] = useState([])
@@ -15,39 +12,11 @@ const CourseDetail = () => {
     const [loading, setLoading] = useState(true)
     const [activeSection, setActiveSection] = useState({})
     const [course, setCourse] = useState({})
-    const [hasAccess, setHasAccess] = useState(false)
     const [selectedLesson, setSelectedLesson] = useState(null)
-
-    useEffect(() => {
-        setLoading(true)
-        const storedUser = JSON.parse(localStorage.getItem("user"))
-        if (storedUser) {
-            setUser(storedUser)
-        }
-        setLoading(false)
-    }, [])
-
-    const userHasAccess = async (user, courseId) => {
-        if (!user || !user.access_token) {
-            return false
-        }
-
-        try {
-            const enrollResponse = await axios.get("https://comanbe.onrender.com/api/enrollments/", {
-                headers: {
-                    Authorization: `Bearer ${user.access_token}`,
-                },
-            })
-
-            const enrollments = enrollResponse.data
-            const hasAccess = enrollments.some((enroll) => enroll.user === user.id && enroll.course.id === courseId)
-
-            return hasAccess
-        } catch (error) {
-            console.error("Lỗi khi kiểm tra quyền truy cập:", error)
-            return false
-        }
-    }
+    const [courseStats, setCourseStats] = useState({
+        totalRevenue: 0,
+        totalEnrollments: 0,
+    })
 
     function getVideoId(url) {
         const regExp = /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
@@ -56,35 +25,32 @@ const CourseDetail = () => {
     }
 
     useEffect(() => {
-        const checkAccess = async () => {
-            if (user && course?.id) {
-                const result = await userHasAccess(user, course.id)
-                setHasAccess(result)
-            }
-        }
-        if (user !== null && course?.id) {
-            checkAccess()
-        }
-    }, [user, course, hasAccess])
-
-    const handleEnroll = () => {
-        if (!user) {
-            navigate("/login")
-            return
-        }
-        setShowConfirm(true)
-    }
-
-    const handlePaymentSuccess = () => {
-        setHasAccess(true)
-        setShowConfirm(false)
-    }
-
-    useEffect(() => {
         const fetchCourse = async () => {
             try {
-                const res = await axios.get(`https://comanbe.onrender.com/api/courses/${id}`)
-                setCourse(res.data)
+                const courseData = await getCourseById(id)
+                setCourse(courseData)
+                try {
+                    const revenueData = await getRevenueCourses()
+                    const courseStats = revenueData.find((item) => item.course_id === Number.parseInt(id))
+
+                    if (courseStats) {
+                        setCourseStats({
+                            totalRevenue: courseStats.total_revenue || 0,
+                            totalEnrollments: courseStats.total_enrollments || 0,
+                        })
+                    } else {
+                        setCourseStats({
+                            totalRevenue: 0,
+                            totalEnrollments: 0,
+                        })
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch course stats:", error)
+                    setCourseStats({
+                        totalRevenue: 0,
+                        totalEnrollments: 0,
+                    })
+                }
             } catch (error) {
                 console.error("Failed to fetch course info:", error)
             }
@@ -97,8 +63,7 @@ const CourseDetail = () => {
     const fetchSections = async () => {
         try {
             setLoading(true)
-            const res = await axios.get(`https://comanbe.onrender.com/api/courses/${id}/sections-with-lessons/`)
-            const data = res.data
+            const data = await getchSectionsWithLessons(id, user.access_token)
 
             setSections(data)
             let allLessons = []
@@ -135,7 +100,7 @@ const CourseDetail = () => {
     }, [id])
 
     const handleClose = () => {
-        navigate("/")
+        navigate(-1)
     }
 
     const toggleSection = (sectionId) => {
@@ -158,6 +123,10 @@ const CourseDetail = () => {
     const formatPrice = (price) => {
         if (!price || price === "0.00") return "Free"
         return `${Number.parseFloat(price).toLocaleString()} VNĐ`
+    }
+
+    const formatRevenue = (revenue) => {
+        return `${Number.parseFloat(revenue).toLocaleString()} VNĐ`
     }
 
     const handleLessonSelect = (lesson) => {
@@ -245,32 +214,15 @@ const CourseDetail = () => {
                 <h2 className="text-2xl font-bold text-emerald-800 mb-4">{selectedLesson.title}</h2>
 
                 {isYoutubeVideo && (
-                    <>
-                        {/* Check if user has access */}
-                        {!user ? (
-                            <div>
-                                <p className="text-sm text-red-500 mb-2">Chưa đăng nhập gì đó.</p>
-                                <PreviewPlayer videoId={getVideoId(selectedLesson.video_url)} />
-                            </div>
-                        ) : !hasAccess && isPaid ? (
-                            <div>
-                                <p className="text-sm text-red-500 mb-2">
-                                    Đây là bản xem trước. Vui lòng mua khóa học để xem toàn bộ nội dung.
-                                </p>
-                                <PreviewPlayer videoId={getVideoId(selectedLesson.video_url)} />
-                            </div>
-                        ) : (
-                            <div className="aspect-video mb-6 w-full h-auto min-h-[480px]">
-                                <iframe
-                                    className="w-full h-full rounded-lg shadow"
-                                    src={`https://www.youtube.com/embed/${getVideoId(selectedLesson.video_url)}`}
-                                    title={selectedLesson.title}
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                />
-                            </div>
-                        )}
-                    </>
+                    <div className="aspect-video mb-6 w-full h-auto min-h-[480px]">
+                        <iframe
+                            className="w-full h-full rounded-lg shadow"
+                            src={`https://www.youtube.com/embed/${getVideoId(selectedLesson.video_url)}`}
+                            title={selectedLesson.title}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    </div>
                 )}
 
                 {/* Article content */}
@@ -417,65 +369,29 @@ const CourseDetail = () => {
                             <p className="text-gray-700 text-sm leading-relaxed">{course.description}</p>
                         </div>
 
-                        {/* Enrollment/Payment section */}
-                        {isPaid ? (
-                            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg p-4 flex flex-col justify-between items-center text-white shadow-lg mb-4">
-                                <div className="mb-3 text-center">
-                                    <p className="text-white/80 text-sm">Giá:</p>
-                                    <p className="text-2xl font-bold">{formatPrice(course.price)}</p>
-                                </div>
-                                {hasAccess ? (
-                                    <span className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block text-center">
-                                        Đã mua
-                                    </span>
-                                ) : (
-                                    <>
-                                        <button
-                                            onClick={handleEnroll}
-                                            className="w-full px-4 py-2 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
-                                        >
-                                            Đăng ký ngay
-                                        </button>
+                        {/* Course Stats section (replacing enrollment section) */}
+                        <div
+                            className={`bg-gradient-to-r ${isPaid ? "from-indigo-500 to-purple-500" : "from-green-500 to-teal-500"} 
+                            rounded-lg p-4 shadow-lg mb-4`}
+                        >
+                            <h2 className="text-lg font-semibold text-white mb-3">Course Statistics</h2>
 
-                                        <ConfirmPayment
-                                            show={showConfirm}
-                                            onClose={() => setShowConfirm(false)}
-                                            user={user}
-                                            course={course}
-                                            onSuccess={handlePaymentSuccess}
-                                        />
-                                    </>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-lg p-4 flex flex-col justify-between items-center text-white shadow-lg mb-4">
-                                <div className="mb-3 text-center">
-                                    <p className="text-white/80 text-sm">Khóa học miễn phí:</p>
-                                    <p className="text-2xl font-bold">Miễn phí</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-white">
+                                    <div className="text-white/80 text-xs mb-1">Doanh thu:</div>
+                                    <div className="text-xl font-bold">{formatRevenue(courseStats.totalRevenue)}</div>
                                 </div>
-                                {hasAccess ? (
-                                    <span className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block text-center">
-                                        Đã đăng ký
-                                    </span>
-                                ) : (
-                                    <>
-                                        <button
-                                            onClick={handleEnroll}
-                                            className="w-full px-4 py-2 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors duration-300 font-medium shadow-md"
-                                        >
-                                            Đăng ký ngay
-                                        </button>
-                                        <ConfirmPayment
-                                            show={showConfirm}
-                                            onClose={() => setShowConfirm(false)}
-                                            user={user}
-                                            course={course}
-                                            onSuccess={handlePaymentSuccess}
-                                        />
-                                    </>
-                                )}
+
+                                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-white">
+                                    <div className="text-white/80 text-xs mb-1">Học viên:</div>
+                                    <div className="text-xl font-bold">{courseStats.totalEnrollments}</div>
+                                </div>
                             </div>
-                        )}
+
+                            <div className="mt-3 text-center">
+                                <p className="text-white/80 text-sm">Giá khóa học: {formatPrice(course.price)}</p>
+                            </div>
+                        </div>
 
                         {/* Course content section */}
                         <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -589,11 +505,6 @@ const CourseDetail = () => {
                                                                                 <div className="flex-grow">
                                                                                     <h5 className="text-gray-800 text-sm">{lesson.title}</h5>
                                                                                 </div>
-                                                                                {!hasAccess && isPaid && (
-                                                                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 ml-1">
-                                                                                        Preview
-                                                                                    </span>
-                                                                                )}
                                                                             </div>
                                                                         </div>
                                                                     )
@@ -623,4 +534,4 @@ const CourseDetail = () => {
     )
 }
 
-export default CourseDetail
+export default CourseDetailViewer
