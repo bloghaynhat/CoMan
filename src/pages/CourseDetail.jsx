@@ -1,13 +1,15 @@
+"use client"
+
 import { useContext, useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { UserContext } from "../context/UserContext";
-import PreviewPlayer from "../components/PreviewPlayer";
+import { UserContext } from "../context/UserContext"
+import PreviewPlayer from "../components/PreviewPlayer"
 import axios from "axios"
-import ConfirmPayment from "../components/ConfirmPayment";
+import ConfirmPayment from "../components/ConfirmPayment"
 
 const CourseDetail = () => {
-    const { user, setUser } = useContext(UserContext);
-    const [showConfirm, setShowConfirm] = useState(false);
+    const { user, setUser } = useContext(UserContext)
+    const [showConfirm, setShowConfirm] = useState(false)
     const { id } = useParams()
     const navigate = useNavigate()
     const [sections, setSections] = useState([])
@@ -15,18 +17,21 @@ const CourseDetail = () => {
     const [loading, setLoading] = useState(true)
     const [activeSection, setActiveSection] = useState({})
     const [course, setCourse] = useState({})
-    const [hasAccess, setHasAccess] = useState(false);
+    const [hasAccess, setHasAccess] = useState(false)
+    const [selectedLesson, setSelectedLesson] = useState(null)
+
     useEffect(() => {
-        setLoading(true);
-        const storedUser = JSON.parse(localStorage.getItem('user'));
+        setLoading(true)
+        const storedUser = JSON.parse(localStorage.getItem("user"))
         if (storedUser) {
-            setUser(storedUser);
+            setUser(storedUser)
         }
-        setLoading(false);
-    }, []);
+        setLoading(false)
+    }, [])
+
     const userHasAccess = async (user, courseId) => {
         if (!user || !user.access_token) {
-            return false;
+            return false
         }
 
         try {
@@ -34,102 +39,106 @@ const CourseDetail = () => {
                 headers: {
                     Authorization: `Bearer ${user.access_token}`,
                 },
-            });
+            })
 
-            const enrollments = enrollResponse.data;
-            const hasAccess = enrollments.some(
-                (enroll) => enroll.user === user.id && enroll.course.id === courseId
-            );
+            const enrollments = enrollResponse.data
+            const hasAccess = enrollments.some((enroll) => enroll.user === user.id && enroll.course.id === courseId)
 
-            return hasAccess;
+            return hasAccess
         } catch (error) {
-            console.error("Lỗi khi kiểm tra quyền truy cập:", error);
-            return false;
+            console.error("Lỗi khi kiểm tra quyền truy cập:", error)
+            return false
         }
-    };
-
+    }
 
     function getVideoId(url) {
-        const regExp = /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-        const match = url.match(regExp);
-        return match ? match[1] : null;
+        const regExp = /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+        const match = url.match(regExp)
+        return match ? match[1] : null
     }
+
     useEffect(() => {
         const checkAccess = async () => {
             if (user && course?.id) {
-                const result = await userHasAccess(user, course.id);
-                setHasAccess(result);
+                const result = await userHasAccess(user, course.id)
+                setHasAccess(result)
             }
-        };
-        if (user !== null && course?.id) {
-            checkAccess();
         }
-    }, [user, course, hasAccess]);
-
+        if (user !== null && course?.id) {
+            checkAccess()
+        }
+    }, [user, course, hasAccess])
 
     const handleEnroll = () => {
         if (!user) {
-            navigate('/login');
-            return;
+            navigate("/login")
+            return
         }
-        setShowConfirm(true);
-    };
+        setShowConfirm(true)
+    }
 
     const handlePaymentSuccess = () => {
-        setHasAccess(true);
-        setShowConfirm(false);
-    };
+        setHasAccess(true)
+        setShowConfirm(false)
+    }
 
     useEffect(() => {
         const fetchCourse = async () => {
             try {
-                const res = await axios.get(`https://comanbe.onrender.com/api/courses/${id}`);
-                setCourse(res.data);
+                const res = await axios.get(`https://comanbe.onrender.com/api/courses/${id}`)
+                setCourse(res.data)
             } catch (error) {
-                console.error("Failed to fetch course info:", error);
+                console.error("Failed to fetch course info:", error)
             }
-        };
-        if (id) {
-            fetchCourse();
         }
-    }, [id]);
+        if (id) {
+            fetchCourse()
+        }
+    }, [id])
 
     const fetchSections = async () => {
         try {
-            setLoading(true);
-            const res = await axios.get(`https://comanbe.onrender.com/api/courses/${id}/sections-with-lessons/`);
-            const data = res.data;
+            setLoading(true)
+            const res = await axios.get(`https://comanbe.onrender.com/api/courses/${id}/sections-with-lessons/`)
+            const data = res.data
 
-            setSections(data);
-            let allLessons = [];
+            setSections(data)
+            let allLessons = []
             data.forEach((section) => {
                 if (section.lessons && Array.isArray(section.lessons)) {
                     const sectionLessons = section.lessons.map((lesson) => ({
                         ...lesson,
                         section_id: section.id,
-                    }));
-                    allLessons = [...allLessons, ...sectionLessons];
+                    }))
+                    allLessons = [...allLessons, ...sectionLessons]
                 }
-            });
-            setLessons(allLessons);
+            })
+            setLessons(allLessons)
 
             if (data.length > 0) {
-                setActiveSection(data[0].id);
+                setActiveSection(data[0].id)
             }
-            setLoading(false);
+
+            // Set the first lesson as selected by default if available
+            if (allLessons.length > 0) {
+                setSelectedLesson(allLessons[0])
+            }
+
+            setLoading(false)
         } catch (error) {
-            console.error("Failed to fetch sections:", error);
-            setLoading(false);
+            console.error("Failed to fetch sections:", error)
+            setLoading(false)
         }
-    };
+    }
+
     useEffect(() => {
         if (id) {
-            fetchSections();
+            fetchSections()
         }
-    }, [id]);
+    }, [id])
 
     const handleClose = () => {
-        navigate(-1)
+        navigate("/")
     }
 
     const toggleSection = (sectionId) => {
@@ -154,6 +163,10 @@ const CourseDetail = () => {
         return `${Number.parseFloat(price).toLocaleString()} VNĐ`
     }
 
+    const handleLessonSelect = (lesson) => {
+        setSelectedLesson(lesson)
+    }
+
     const isPaid = course?.is_paid
     const themeColors = isPaid
         ? {
@@ -171,7 +184,7 @@ const CourseDetail = () => {
 
     if (loading) {
         return (
-            <div className="container mx-auto p-4 md:p-6 max-w-5xl relative bg-white rounded-xl shadow-lg">
+            <div className="container mx-auto p-4 md:p-6 max-w-7xl relative bg-white rounded-xl shadow-lg">
                 <button
                     onClick={handleClose}
                     className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-300 text-gray-700 hover:text-gray-900 z-10"
@@ -189,42 +202,29 @@ const CourseDetail = () => {
                 {/*Skeleton loading 💀💀💀*/}
                 <div className="animate-pulse">
                     <div className="h-8 bg-gray-200 w-2/3 mb-6 rounded-md"></div>
-                    <div className="h-72 md:h-96 bg-gray-200 mb-8 rounded-lg w-full"></div>
-                    <div className="flex flex-wrap gap-4 mb-6">
-                        <div className="h-6 bg-gray-200 w-32 rounded-md"></div>
-                        <div className="h-6 bg-gray-200 w-32 rounded-md"></div>
-                        <div className="h-6 bg-gray-200 w-32 rounded-md"></div>
-                    </div>
-                    <div className="space-y-2 mb-8">
-                        <div className="h-4 bg-gray-200 rounded-md w-full"></div>
-                        <div className="h-4 bg-gray-200 rounded-md w-5/6"></div>
-                        <div className="h-4 bg-gray-200 rounded-md w-4/6"></div>
-                    </div>
-
-                    {/* Section skeleton 💀💀💀*/}
-                    <div className="h-6 bg-gray-200 w-40 mb-4 rounded-md"></div>
-
-                    {/* Course content skeleton - sections 💀💀💀*/}
-                    <div className="space-y-4 mb-8">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
-                                <div className="h-12 bg-gray-200 p-4 flex justify-between items-center">
-                                    <div className="h-4 bg-gray-300 rounded w-1/3"></div>
-                                    <div className="h-4 bg-gray-300 rounded w-8"></div>
-                                </div>
-                                <div className="p-4 space-y-3">
-                                    {[1, 2, 3].map((j) => (
-                                        <div key={j} className="flex items-center gap-3">
-                                            <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
-                                            <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-                                        </div>
-                                    ))}
-                                </div>
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        <div className="lg:w-2/3">
+                            <div className="h-72 md:h-96 bg-gray-200 mb-8 rounded-lg w-full"></div>
+                            <div className="space-y-2 mb-8">
+                                <div className="h-4 bg-gray-200 rounded-md w-full"></div>
+                                <div className="h-4 bg-gray-200 rounded-md w-5/6"></div>
+                                <div className="h-4 bg-gray-200 rounded-md w-4/6"></div>
                             </div>
-                        ))}
+                        </div>
+                        <div className="lg:w-1/3">
+                            <div className="h-6 bg-gray-200 w-40 mb-4 rounded-md"></div>
+                            <div className="space-y-4 mb-8">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                                        <div className="h-12 bg-gray-200 p-4 flex justify-between items-center">
+                                            <div className="h-4 bg-gray-300 rounded w-1/3"></div>
+                                            <div className="h-4 bg-gray-300 rounded w-8"></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="h-8 bg-gray-200 w-48 rounded-md mt-6"></div>
                 </div>
             </div>
         )
@@ -236,9 +236,72 @@ const CourseDetail = () => {
         return date.toLocaleDateString("vi-VN", { year: "numeric", month: "long", day: "numeric" })
     }
 
+    // Render the lesson content
+    const renderLessonContent = () => {
+        if (!selectedLesson) return null
+
+        const articlePoints = formatArticleContent(selectedLesson.article_content)
+        const isYoutubeVideo = selectedLesson.video_url && selectedLesson.video_url.includes("youtube.com")
+
+        return (
+            <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+                <h2 className="text-2xl font-bold text-emerald-800 mb-4">{selectedLesson.title}</h2>
+
+                {isYoutubeVideo && (
+                    <>
+                        {/* Check if user has access */}
+                        {!user ? (
+                            <div>
+                                <p className="text-sm text-red-500 mb-2">Chưa đăng nhập gì đó.</p>
+                                <PreviewPlayer videoId={getVideoId(selectedLesson.video_url)} />
+                            </div>
+                        ) : !hasAccess && isPaid ? (
+                            <div>
+                                <p className="text-sm text-red-500 mb-2">
+                                    Đây là bản xem trước. Vui lòng mua khóa học để xem toàn bộ nội dung.
+                                </p>
+                                <PreviewPlayer videoId={getVideoId(selectedLesson.video_url)} />
+                            </div>
+                        ) : (
+                            <div className="aspect-video mb-6 w-full h-auto min-h-[480px]">
+                                <iframe
+                                    className="w-full h-full rounded-lg shadow"
+                                    src={`https://www.youtube.com/embed/${getVideoId(selectedLesson.video_url)}`}
+                                    title={selectedLesson.title}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Article content */}
+                {articlePoints.length > 0 && (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mt-4">
+                        <h3 className="text-lg font-medium text-gray-700 mb-3">Lesson Content:</h3>
+                        <div className="space-y-3 pl-2">
+                            {articlePoints.map((point, idx) => (
+                                <p key={idx} className="text-gray-600 flex items-start">
+                                    <span className="text-emerald-500 mr-2">•</span>
+                                    <span>{point}</span>
+                                </p>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        )
+    }
+
+    // Debug information
+    console.log("selectedLesson:", selectedLesson)
+    console.log("isPaid:", isPaid)
+    console.log("hasAccess:", hasAccess)
+
     return (
         <div
-            className={`container mx-auto p-4 md:p-6 max-w-5xl bg-gradient-to-br from-${themeColors.light}-50 to-white rounded-xl shadow-lg relative`}
+            className={`container mx-auto p-4 md:p-6 max-w-7xl bg-gradient-to-br from-${themeColors.light}-50 to-white rounded-xl shadow-lg relative`}
         >
             <button
                 onClick={handleClose}
@@ -256,29 +319,17 @@ const CourseDetail = () => {
             </button>
 
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-emerald-800 mb-4 pb-2 border-b-2 border-emerald-200">
+                <h1 className="text-3xl font-bold text-emerald-800 mb-4 pb-2 border-b-2 border-emerald-200 flex items-center">
                     {course.title}
+                    <span
+                        className={`ml-3 px-3 py-1 rounded-full text-sm font-medium ${isPaid
+                            ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
+                            : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
+                            }`}
+                    >
+                        {isPaid ? "Premium" : "Free"}
+                    </span>
                 </h1>
-
-                <div className="relative rounded-xl overflow-hidden mb-6 shadow-lg">
-                    <img
-                        src={course.image || "/placeholder.svg?height=400&width=600"}
-                        alt={course.title}
-                        className="w-full h-72 md:h-96 object-cover transition-transform duration-700 hover:scale-105"
-                    />
-                    <div className="absolute inset-0"></div>
-
-                    <div className="absolute top-4 left-4">
-                        <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${isPaid
-                                ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
-                                : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
-                                }`}
-                        >
-                            {isPaid ? "Premium" : "Free"}
-                        </span>
-                    </div>
-                </div>
 
                 <div className="flex flex-wrap gap-6 mb-6 text-emerald-700 bg-sky-50 p-4 rounded-lg shadow-inner">
                     <div className="flex items-center gap-2">
@@ -336,245 +387,250 @@ const CourseDetail = () => {
                 </div>
             </div>
 
-            <div className="bg-gradient-to-r from-emerald-50 to-sky-50 p-6 rounded-lg mb-8 shadow-md border border-emerald-100">
-                <h2 className="text-xl font-semibold text-emerald-800 mb-3">About This Course</h2>
-                <p className="text-gray-700 leading-relaxed">{course.description}</p>
-            </div>
+            {/* Main content area*/}
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Left side - Lesson content*/}
+                <div className="lg:w-3/4 order-2 lg:order-1">
+                    {selectedLesson ? (
+                        renderLessonContent()
+                    ) : (
+                        <div className="relative rounded-xl overflow-hidden mb-6 shadow-lg">
+                            <img
+                                src={course.image || "/placeholder.svg?height=400&width=600"}
+                                alt={course.title}
+                                className="w-full h-72 md:h-96 object-cover transition-transform duration-700 hover:scale-105"
+                            />
+                            <div className="absolute inset-0"></div>
 
-            {/* Course Content - Sections and Lessons */}
-            <div className="mb-8">
-                <div className="flex items-center mb-4 bg-cyan-50 p-3 rounded-t-lg border-b-2 border-cyan-200">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 mr-2 text-cyan-500"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                    </svg>
-                    <h3 className="text-xl font-semibold text-cyan-800">Course Content</h3>
-                    <span className="ml-auto text-sm text-gray-500">
-                        {sections.length} sections • {getTotalLessons()} lessons
-                    </span>
+                            <div className="absolute top-4 left-4">
+                                <span
+                                    className={`px-3 py-1 rounded-full text-sm font-medium ${isPaid
+                                        ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"
+                                        : "bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800"
+                                        }`}
+                                >
+                                    {isPaid ? "Premium" : "Free"}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    {!selectedLesson && (
+                        <div className="bg-gradient-to-r from-emerald-50 to-sky-50 p-6 rounded-lg mb-8 shadow-md border border-emerald-100">
+                            <h2 className="text-xl font-semibold text-emerald-800 mb-3">About This Course</h2>
+                            <p className="text-gray-700 leading-relaxed">{course.description}</p>
+                        </div>
+                    )}
                 </div>
 
-                {sections.length > 0 ? (
-                    <div className="bg-white rounded-b-lg overflow-hidden shadow-md">
-                        {sections.map((section) => {
-                            const sectionLessons = getLessonsForSection(section.id)
-                            return (
-                                <div key={section.id} className="border-b border-gray-100 last:border-b-0">
-                                    <div
-                                        className="p-4 flex justify-between items-center cursor-pointer hover:bg-sky-50 transition-colors duration-200"
-                                        onClick={() => toggleSection(section.id)}
-                                    >
-                                        <div className="flex items-center">
-                                            <span className="w-8 h-8 flex items-center justify-center bg-emerald-100 text-emerald-700 rounded-full mr-3 font-medium">
-                                                {section.id > 2 ? section.id - 2 : section.id}
-                                            </span>
-                                            <h4 className="font-medium text-gray-800">{section.title}</h4>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-sm text-gray-500">{sectionLessons.length} lessons</span>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className={`h-5 w-5 transition-transform duration-200 ${activeSection === section.id ? "transform rotate-180" : ""
-                                                    }`}
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </div>
-                                    </div>
+                {/* Right side - Course content*/}
+                <div className="lg:w-1/4 order-1 lg:order-2">
+                    <div className="sticky top-4">
+                        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div className="bg-cyan-50 p-3 border-b-2 border-cyan-200 flex items-center">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-6 w-6 mr-2 text-cyan-500"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                                    />
+                                </svg>
+                                <h3 className="text-lg font-semibold text-cyan-800">Course Content</h3>
+                                <span className="ml-auto text-sm text-gray-500">
+                                    {sections.length} sections • {getTotalLessons()} lessons
+                                </span>
+                            </div>
 
-                                    {/* Lessons for this section */}
-                                    {activeSection === section.id && (
-                                        <div className="bg-gray-50 p-4 space-y-2">
-                                            {sectionLessons.length > 0 ? (
-                                                sectionLessons.map((lesson) => {
-                                                    const articlePoints = formatArticleContent(lesson.article_content)
-                                                    const isYoutubeVideo = lesson.video_url && lesson.video_url.includes("youtube.com")
-                                                    return (
-                                                        <div key={lesson.id} className="rounded-md border border-gray-100 overflow-hidden">
-                                                            <div className="flex items-start p-3 bg-white hover:bg-sky-50 transition-colors duration-200">
-                                                                <div className="flex-shrink-0 mr-3">
-                                                                    {isYoutubeVideo ? (
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            className="h-5 w-5 text-cyan-500"
-                                                                            fill="none"
-                                                                            viewBox="0 0 24 24"
-                                                                            stroke="currentColor"
+                            <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+                                {sections.length > 0 ? (
+                                    <div>
+                                        {sections.map((section) => {
+                                            const sectionLessons = getLessonsForSection(section.id)
+                                            return (
+                                                <div key={section.id} className="border-b border-gray-100 last:border-b-0">
+                                                    <div
+                                                        className="p-3 flex justify-between items-center cursor-pointer hover:bg-sky-50 transition-colors duration-200"
+                                                        onClick={() => toggleSection(section.id)}
+                                                    >
+                                                        <div className="flex items-center">
+                                                            <span className="w-7 h-7 flex items-center justify-center bg-emerald-100 text-emerald-700 rounded-full mr-2 text-sm font-medium">
+                                                                {section.id > 2 ? section.id - 2 : section.id}
+                                                            </span>
+                                                            <h4 className="font-medium text-gray-800 text-sm">{section.title}</h4>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs text-gray-500">{sectionLessons.length}</span>
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className={`h-4 w-4 transition-transform duration-200 ${activeSection === section.id ? "transform rotate-180" : ""
+                                                                    }`}
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Lessons for this section */}
+                                                    {activeSection === section.id && (
+                                                        <div className="bg-gray-50 p-2 space-y-1">
+                                                            {sectionLessons.length > 0 ? (
+                                                                sectionLessons.map((lesson) => {
+                                                                    const isYoutubeVideo = lesson.video_url && lesson.video_url.includes("youtube.com")
+                                                                    const isActive = selectedLesson && selectedLesson.id === lesson.id
+
+                                                                    return (
+                                                                        <div
+                                                                            key={lesson.id}
+                                                                            className={`rounded-md border ${isActive ? "border-emerald-300 bg-emerald-50" : "border-gray-100 bg-white"} overflow-hidden cursor-pointer`}
+                                                                            onClick={() => handleLessonSelect(lesson)}
                                                                         >
-                                                                            <path
-                                                                                strokeLinecap="round"
-                                                                                strokeLinejoin="round"
-                                                                                strokeWidth={2}
-                                                                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                                                                            />
-                                                                            <path
-                                                                                strokeLinecap="round"
-                                                                                strokeLinejoin="round"
-                                                                                strokeWidth={2}
-                                                                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                                            />
-                                                                        </svg>
-                                                                    ) : (
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            className="h-5 w-5 text-emerald-500"
-                                                                            fill="none"
-                                                                            viewBox="0 0 24 24"
-                                                                            stroke="currentColor"
-                                                                        >
-                                                                            <path
-                                                                                strokeLinecap="round"
-                                                                                strokeLinejoin="round"
-                                                                                strokeWidth={2}
-                                                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                                                            />
-                                                                        </svg>
-                                                                    )}
-                                                                </div>
-                                                                <div className="flex-grow">
-                                                                    <h5 className="text-gray-800 font-medium">{lesson.title}</h5>
-
-                                                                    {/* Kiểm tra khóa học trả phí và người dùng đã đăng nhập chưa */}
-                                                                    {(!user) ? (
-                                                                        <div>
-                                                                            <p className="text-sm text-red-500 mb-2">
-                                                                                Chưa đăng nhập gì đó.
-                                                                            </p>
-                                                                            <PreviewPlayer videoId={getVideoId(lesson.video_url)} />
-                                                                        </div>
-                                                                    ) : (
-                                                                        isYoutubeVideo && (
-                                                                            <>
-                                                                                {/* Kiểm tra trả phí và mua hay chưa*/}
-                                                                                {!hasAccess ? (
-                                                                                    <div>
-                                                                                        <p className="text-sm text-red-500 mb-2">
-                                                                                            Đây là bản xem trước. Vui lòng mua khóa học để xem toàn bộ nội dung.
-                                                                                        </p>
-                                                                                        <PreviewPlayer videoId={getVideoId(lesson.video_url)} />
-                                                                                    </div>
-                                                                                ) : (
-                                                                                    <iframe
-                                                                                        className="w-full aspect-video rounded-lg shadow"
-                                                                                        src={lesson.video_url}
-                                                                                        title={lesson.title}
-                                                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                                                        allowFullScreen
-                                                                                    />
-
+                                                                            <div className="flex items-start p-2 hover:bg-sky-50 transition-colors duration-200">
+                                                                                <div className="flex-shrink-0 mr-2">
+                                                                                    {isYoutubeVideo ? (
+                                                                                        <svg
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            className="h-4 w-4 text-cyan-500"
+                                                                                            fill="none"
+                                                                                            viewBox="0 0 24 24"
+                                                                                            stroke="currentColor"
+                                                                                        >
+                                                                                            <path
+                                                                                                strokeLinecap="round"
+                                                                                                strokeLinejoin="round"
+                                                                                                strokeWidth={2}
+                                                                                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                                                                            />
+                                                                                            <path
+                                                                                                strokeLinecap="round"
+                                                                                                strokeLinejoin="round"
+                                                                                                strokeWidth={2}
+                                                                                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                                                            />
+                                                                                        </svg>
+                                                                                    ) : (
+                                                                                        <svg
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            className="h-4 w-4 text-emerald-500"
+                                                                                            fill="none"
+                                                                                            viewBox="0 0 24 24"
+                                                                                            stroke="currentColor"
+                                                                                        >
+                                                                                            <path
+                                                                                                strokeLinecap="round"
+                                                                                                strokeLinejoin="round"
+                                                                                                strokeWidth={2}
+                                                                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                                                                            />
+                                                                                        </svg>
+                                                                                    )}
+                                                                                </div>
+                                                                                <div className="flex-grow">
+                                                                                    <h5 className="text-gray-800 text-sm">{lesson.title}</h5>
+                                                                                </div>
+                                                                                {!hasAccess && isPaid && (
+                                                                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-cyan-100 text-cyan-700 ml-1">
+                                                                                        Preview
+                                                                                    </span>
                                                                                 )}
-                                                                            </>
-                                                                        )
-                                                                    )}
-                                                                </div>
-                                                                <span className="text-xs px-2 py-1 rounded-full bg-cyan-100 text-cyan-700">
-                                                                    Preview
-                                                                </span>
-                                                            </div>
-
-                                                            {/* Article content */}
-                                                            {articlePoints.length > 0 && (
-                                                                <div className="bg-gray-50 p-4 border-t border-gray-100">
-                                                                    <h6 className="text-sm font-medium text-gray-700 mb-2">Lesson Content:</h6>
-                                                                    <ul className="space-y-1 pl-2">
-                                                                        {articlePoints.map((point, idx) => (
-                                                                            <li key={idx} className="text-sm text-gray-600 flex items-start">
-                                                                                <span className="text-emerald-500 mr-2">•</span>
-                                                                                <span>{point}</span>
-                                                                            </li>
-                                                                        ))}
-                                                                    </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    )
+                                                                })
+                                                            ) : (
+                                                                <div className="text-center py-3 text-gray-500 text-sm">
+                                                                    No lessons available in this section
                                                                 </div>
                                                             )}
                                                         </div>
-                                                    )
-                                                })
-                                            ) : (
-                                                <div className="text-center py-4 text-gray-500">No lessons available in this section</div>
-                                            )}
-                                        </div>
-                                    )
-                                    }
-                                </div>
-                            )
-                        })}
+                                                    )}
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="bg-cyan-50 p-4 text-center border border-cyan-100">
+                                        <p className="text-gray-500 text-sm">No sections available for this course yet.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                ) : (
-                    <div className="bg-cyan-50 p-6 rounded-lg text-center border border-cyan-100">
-                        <p className="text-gray-500">No sections available for this course yet.</p>
-                    </div>
-                )}
+                </div>
             </div>
 
-            {isPaid ? (
-                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg">
-                    <div>
-                        <p className="text-white/80 mb-1">Giá:</p>
-                        <p className="text-3xl font-bold">{formatPrice(course.price)}</p>
-                    </div>
-                    {hasAccess ? (
-                        <span className="mt-4 md:mt-0 px-8 py-3 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block">
-                            Đã mua
-                        </span>
+            {/* Enrollment/Payment section - Moved outside the flex container */}
+            {!selectedLesson && (
+                <div className="mt-8 z-50 relative">
+                    {isPaid ? (
+                        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg">
+                            <div>
+                                <p className="text-white/80 mb-1">Giá:</p>
+                                <p className="text-3xl font-bold">{formatPrice(course.price)}</p>
+                            </div>
+                            {hasAccess ? (
+                                <span className="mt-4 md:mt-0 px-8 py-3 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block">
+                                    Đã mua
+                                </span>
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={handleEnroll}
+                                        className="mt-4 md:mt-0 px-8 py-3 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
+                                    >
+                                        Đăng ký ngay
+                                    </button>
+
+                                    <ConfirmPayment
+                                        show={showConfirm}
+                                        onClose={() => setShowConfirm(false)}
+                                        user={user}
+                                        course={course}
+                                        onSuccess={handlePaymentSuccess}
+                                    />
+                                </>
+                            )}
+                        </div>
                     ) : (
-                        <>
-                            <button
-                                onClick={handleEnroll}
-                                className="mt-4 md:mt-0 px-8 py-3 bg-white text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-300 font-medium shadow-md"
-                            >
-                                Đăng ký ngay
-                            </button>
-
-                            <ConfirmPayment
-                                show={showConfirm}
-                                onClose={() => setShowConfirm(false)}
-                                user={user}
-                                course={course}
-                                onSuccess={handlePaymentSuccess}
-                            />
-                        </>
-                    )}
-                </div>
-            ) : (
-                <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg">
-                    <div>
-                        <p className="text-white/80 mb-1">Khóa học miễn phí:</p>
-                        <p className="text-3xl font-bold">Miễn phí</p>
-                    </div>
-                    {hasAccess ? (
-                        <span className="mt-4 md:mt-0 px-8 py-3 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block">
-                            Đã đăng ký
-                        </span>
-                    ) : (
-                        <>
-                            <button
-                                onClick={handleEnroll}
-                                className="mt-4 md:mt-0 px-8 py-3 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors duration-300 font-medium shadow-md"
-                            >
-                                Đăng ký ngay
-                            </button>
-                            <ConfirmPayment
-                                show={showConfirm}
-                                onClose={() => setShowConfirm(false)}
-                                user={user}
-                                course={course}
-                                onSuccess={handlePaymentSuccess}
-                            />
-                        </>
-
-
+                        <div className="bg-gradient-to-r from-green-500 to-teal-500 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg">
+                            <div>
+                                <p className="text-white/80 mb-1">Khóa học miễn phí:</p>
+                                <p className="text-3xl font-bold">Miễn phí</p>
+                            </div>
+                            {hasAccess ? (
+                                <span className="mt-4 md:mt-0 px-8 py-3 bg-green-100 text-green-700 rounded-lg font-medium shadow-md inline-block">
+                                    Đã đăng ký
+                                </span>
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={handleEnroll}
+                                        className="mt-4 md:mt-0 px-8 py-3 bg-white text-teal-600 rounded-lg hover:bg-teal-50 transition-colors duration-300 font-medium shadow-md"
+                                    >
+                                        Đăng ký ngay
+                                    </button>
+                                    <ConfirmPayment
+                                        show={showConfirm}
+                                        onClose={() => setShowConfirm(false)}
+                                        user={user}
+                                        course={course}
+                                        onSuccess={handlePaymentSuccess}
+                                    />
+                                </>
+                            )}
+                        </div>
                     )}
                 </div>
             )}
-
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getchSectionsWithLessons, createSection, deleteSection, createLesson, deleteLesson } from "../../api/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { UserContext } from "@/context/UserContext";
 const CourseDetailViewer = () => {
     const { courseId } = useParams();
     const { user } = useContext(UserContext);
+    const navigate = useNavigate();
     const [sections, setSections] = useState([]);
     const [lessons, setLessons] = useState([]);
     const [newSections, setNewSections] = useState([]);
@@ -90,6 +91,7 @@ const CourseDetailViewer = () => {
             setNewLessons([]);
             setDeletedSectionIds([]);
             setDeletedLessonIds([]);
+            navigate("/admin/courses");
         } catch (error) {
             console.error("Error saving changes:", error);
         }
@@ -156,6 +158,7 @@ const CourseDetailViewer = () => {
             <div className="flex gap-4 mt-4">
                 <Button onClick={handleAddSection}>Thêm chương</Button>
                 <Button onClick={handleSaveChanges}>Lưu thay đổi</Button>
+                <Button variant="outline" onClick={() => navigate("/admin/courses")}>Quay lại</Button>
             </div>
         </div>
     );
