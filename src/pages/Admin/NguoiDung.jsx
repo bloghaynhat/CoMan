@@ -38,7 +38,11 @@ export default function NguoiDung() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <UserTable users={users} isLoadingUser={isLoadingUser} />
+          <UserTable
+            users={users}
+            isLoadingUser={isLoadingUser}
+            setUsers={setUsers}
+          />
         </CardContent>
       </Card>
     </div>

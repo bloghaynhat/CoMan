@@ -65,3 +65,36 @@ export const fetchUserById = async (id) => {
     throw error;
   }
 };
+
+// Hàm thay đổi trạng thái của người dùng
+export const ChangeUserStatus = async (userId, currentStatus) => {
+  try {
+    // Lấy token từ localStorage
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      throw new Error("No access token found.");
+    }
+
+    // Gửi request PATCH để cập nhật trạng thái is_active
+    const response = await axiosInstance.patch(
+      `/api/users/${userId}/`,
+      { is_active: !currentStatus },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào header
+        },
+      }
+    );
+
+    // Nếu thành công, trả về true
+    if (response.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    return false;
+  }
+};
