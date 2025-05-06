@@ -10,12 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import dayjs from "dayjs";
+import { ChangeUserStatus } from "@/api/admin";
 
 // Skeleton component
 function SkeletonRow() {
   return (
     <div className="space-y-2 p-4">
-      {[...Array(5)].map((_, idx) => (
+      {[...Array(10)].map((_, idx) => (
         <div
           key={idx}
           className="h-6 bg-gray-200 animate-pulse rounded w-full"
@@ -25,7 +26,21 @@ function SkeletonRow() {
   );
 }
 
-export default function UserTable({ users, isLoadingUser }) {
+export default function UserTable({ users, setUsers, isLoadingUser }) {
+  const handleToggleStatus = async (userId, currentStatus) => {
+    const isSuccess = await ChangeUserStatus(userId, currentStatus);
+
+    if (isSuccess) {
+      // Cập nhật lại trạng thái của người dùng trong danh sách
+      const updatedUsers = users.map((user) =>
+        user.id === userId ? { ...user, is_active: !currentStatus } : user
+      );
+      // Cập nhật lại state users
+      setUsers(updatedUsers);
+    } else {
+      alert("Không thể thay đổi trạng thái người dùng.");
+    }
+  };
   const columns = [
     {
       name: "Tên người dùng",
@@ -57,11 +72,13 @@ export default function UserTable({ users, isLoadingUser }) {
       name: "Khóa học",
       selector: (row) => row.course_count,
       center: true,
+      sortable: true,
     },
     {
       name: "Ngày tham gia",
       selector: (row) => row.date_joined,
       center: true,
+      sortable: true,
       cell: (row) => (
         <span className="text-sm text-muted-foreground">
           {dayjs(row.date_joined).format("DD/MM/YYYY")}
@@ -72,6 +89,7 @@ export default function UserTable({ users, isLoadingUser }) {
       name: "Trạng thái",
       selector: (row) => row.is_active,
       center: true,
+      sortable: true,
       cell: (row) => (
         <span
           className={`text-xs px-2 py-1 rounded-full ${
@@ -95,10 +113,14 @@ export default function UserTable({ users, isLoadingUser }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
             <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">Xóa</DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={() => handleToggleStatus(row.id, row.is_active)}
+            >
+              Đổi trạng thái
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),

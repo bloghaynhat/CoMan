@@ -11,6 +11,20 @@ import { useNavigate } from "react-router-dom";
 
 export default function RevenueChart({ courses, isLoadingRevenue }) {
   const navigate = useNavigate();
+
+  // Sắp xếp theo total_revenue (giảm dần)
+  const sortedCourses = courses.sort(
+    (a, b) => b.total_revenue - a.total_revenue
+  );
+
+  // Hàm format doanh thu
+  const formatRevenue = (revenue) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(revenue || 0);
+  };
+
   return (
     <Card className="col-span-1 flex flex-col justify-between">
       <CardHeader>
@@ -20,7 +34,7 @@ export default function RevenueChart({ courses, isLoadingRevenue }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className=" space-y-4">
+        <div className="space-y-4">
           {isLoadingRevenue
             ? // Skeleton loader for courses
               Array.from({ length: 5 }).map((_, index) => (
@@ -35,12 +49,12 @@ export default function RevenueChart({ courses, isLoadingRevenue }) {
                 </div>
               ))
             : // Show course details after loading
-              courses.map((course) => (
+              sortedCourses.slice(0, 5).map((course) => (
                 <div key={course.course_id} className="space-y-4">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">{course.title}</p>
                     <p className="text-sm font-bold">
-                      {course.total_revenue || 0}
+                      {formatRevenue(course.total_revenue)}
                     </p>
                   </div>
                   <div className="h-2 w-full rounded-full bg-gray-100">
@@ -49,7 +63,7 @@ export default function RevenueChart({ courses, isLoadingRevenue }) {
                       style={{
                         width: `${
                           course.total_revenue
-                            ? (course.total_revenue / 130000) * 100 // Tính tỷ lệ phần trăm doanh thu
+                            ? (course.total_revenue / 10000000) * 100 // Tính tỷ lệ phần trăm doanh thu
                             : 0
                         }%`, // Nếu không có doanh thu, chiều rộng mặc định là 0%
                       }}

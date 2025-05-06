@@ -31,7 +31,7 @@ export default function Dashboard() {
         setIsLoadingCourse(false);
       })
       .finally(() => setIsLoadingCourse(false));
-    fetchRevenueByCourse(5)
+    fetchRevenueByCourse()
       .then((data) => {
         setRevenue(data);
         setIsLoadingRevenue(false);

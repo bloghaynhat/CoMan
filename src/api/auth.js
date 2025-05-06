@@ -1,29 +1,27 @@
+import { UserContext } from "../context/UserContext";
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
-// Cấu hình axios
-const axiosInstance = axios.create({
-  baseURL: "https://comanbe.onrender.com", // Địa chỉ server của bạn
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// Hàm đăng nhập
+// ===============================
+// HÀM LOGIN
+// ===============================
 export const login = async (username, password) => {
   try {
-    // Gửi request để nhận token
     const response = await axiosInstance.post("/api/token/", {
       username,
       password,
     });
 
-    // Lưu vào localStorage
     localStorage.setItem("access_token", response.data.access);
     localStorage.setItem("refresh_token", response.data.refresh);
     localStorage.setItem("role", response.data.role);
 
-    getUserInfo();
-    // Trả về thông tin gồm token và role
+    axiosInstance.defaults.headers[
+      "Authorization"
+    ] = `Bearer ${response.data.access}`;
+
+    await getUserInfo();
+
     return {
       access: response.data.access,
       refresh: response.data.refresh,
@@ -35,60 +33,55 @@ export const login = async (username, password) => {
   }
 };
 
-// Hàm làm mới token
+// ===============================
+// HÀM REFRESH TOKEN
+// ===============================
 export const refreshToken = async () => {
   const refreshToken = localStorage.getItem("refresh_token");
   if (!refreshToken) {
     throw new Error("No refresh token found.");
   }
 
-  try {
-    const response = await axiosInstance.post("/api/token/refresh/", {
-      refresh: refreshToken,
-    });
+  const response = await axiosInstance.post("/api/token/refresh/", {
+    refresh: refreshToken,
+  });
 
-    // Lưu lại access token mới vào localStorage và cập nhật role
-    localStorage.setItem("access_token", response.data.access);
-    localStorage.setItem("role", response.data.role); // Cập nhật role vào localStorage
+  const access = response.data.access;
+  localStorage.setItem("access_token", access);
+  axiosInstance.defaults.headers["Authorization"] = `Bearer ${access}`;
 
-    return response.data; // Trả về dữ liệu token mới
-  } catch (error) {
-    throw error;
-  }
+  return { access };
 };
 
-// Hàm đăng xuất, xóa token và role khỏi localStorage
+// ===============================
+// HÀM LOGOUT
+// ===============================
 export const logout = () => {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
-  localStorage.removeItem("role"); // Xóa role khỏi localStorage
+  localStorage.removeItem("role");
+  localStorage.removeItem("first_name");
+  localStorage.removeItem("last_name");
+  localStorage.removeItem("id");
 };
 
-// Hàm lấy thông tin người dùng từ access token
+// ===============================
+// HÀM LẤY THÔNG TIN NGƯỜI DÙNG
+// ===============================
 export const getUserInfo = async () => {
-  try {
-    // Lấy access token từ localStorage
-    const accessToken = localStorage.getItem("access_token");
+  const accessToken = localStorage.getItem("access_token");
+  if (!accessToken) throw new Error("Access token not found.");
 
-    // Kiểm tra xem token có tồn tại không
-    if (!accessToken) {
-      throw new Error("Access token not found.");
-    }
+  const response = await axiosInstance.get("/api/auth/user/", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
-    // Gửi yêu cầu đến API để lấy thông tin người dùng, sử dụng token trong header
-    const response = await axiosInstance.get("/api/auth/user/", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`, // Thêm token vào header Authorization
-      },
-    });
-    // Lưu vào localStorage
-    localStorage.setItem("first_name", response.data.first_name);
-    localStorage.setItem("last_name", response.data.last_name);
-    localStorage.setItem("id", response.data.id);
-    // Trả về dữ liệu người dùng từ API
-    return response.data;
-  } catch (error) {
-    console.error("Error getting user info: ", error);
-    throw new Error("Failed to retrieve user information.");
-  }
+  const user = response.data;
+  localStorage.setItem("first_name", user.first_name);
+  localStorage.setItem("last_name", user.last_name);
+  localStorage.setItem("id", user.id);
+
+  return user;
 };
