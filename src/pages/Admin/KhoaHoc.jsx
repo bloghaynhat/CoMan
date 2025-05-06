@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/card";
 import { getRevenueCourses } from "../../api/admin";
 import CourseTable from "@/components/CourseTable";
 import AddCourseModal from "@/components/CreateCourse/Modals/AddCourseModal";
 
-
 export default function KhoaHoc() {
+  // Thêm title cho trang
+  useEffect(() => {
+    document.title = "Quản lí khóa học";
+    return () => {
+      document.title = "Coman"; // Reset title khi unmount
+    };
+  }, []);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +39,7 @@ export default function KhoaHoc() {
     return <div>Đang tải...</div>;
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-10/12 mx-auto my-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Quản lý khóa học</h2>
         <AddCourseModal
@@ -37,7 +49,9 @@ export default function KhoaHoc() {
               title: newCourse.title,
               students: 0,
               revenue: newCourse.price + "đ",
-              lastUpdated: new Date(newCourse.created_at).toLocaleDateString("vi-VN"),
+              lastUpdated: new Date(newCourse.created_at).toLocaleDateString(
+                "vi-VN"
+              ),
             };
             setCourses((prev) => [formatted, ...prev]);
           }}
@@ -47,7 +61,6 @@ export default function KhoaHoc() {
             Thêm khóa học mới
           </Button>
         </AddCourseModal>
-
       </div>
 
       <Card>

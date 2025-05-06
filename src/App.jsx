@@ -15,6 +15,7 @@ import SetupCourse from "./components/CreateCourse/SetupCourse";
 
 import CourseEditor from "./components/CreateCourse/CourseEditor";
 import CourseDetailViewer from "./components/CreateCourse/CourseDetailViewer";
+import NotFound from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -84,6 +85,10 @@ const router = createBrowserRouter([
         element: <ThongKe />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 

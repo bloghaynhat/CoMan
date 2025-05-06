@@ -57,6 +57,17 @@ export const getRevenueCourses = async() => {
     }
 };
 
+export const fetchTransaction = async() => {
+    try {
+        const response = await axiosInstance.get("/api/enrollments/paid/");
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi gọi API lấy transaction:", error);
+        throw error;
+    }
+};
+
+
 export const getCourseById = async(id) => {
     try {
         const response = await axiosInstance.get(`/api/courses/${id}`);
@@ -66,7 +77,6 @@ export const getCourseById = async(id) => {
         throw error;
     }
 };
-
 
 export const createCourse = async(courseData, token) => {
     try {

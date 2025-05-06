@@ -10,6 +10,13 @@ import {
 } from "@/api/admin";
 
 export default function Dashboard() {
+  // Thêm title cho trang
+  useEffect(() => {
+    document.title = "Tổng quan";
+    return () => {
+      document.title = "Coman"; // Reset title khi unmount
+    };
+  }, []);
   // Xử lí 4 ô stat
   const [stats, setStats] = useState([]);
   const [courses, setCourse] = useState([]);
