@@ -9,7 +9,7 @@ const TrangChu = () => {
   const [paidCourse, setPaidCourse] = useState([]);
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/courses/")
+      .get("https://comanbe.onrender.com/api/courses/")
       .then((response) => {
         const allCourses = response.data;
 
