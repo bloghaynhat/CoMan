@@ -5,26 +5,16 @@ import CategoryFilter from './CategoryFilter.jsx';
 import NoEvents from './NoEvents.jsx';
 import axios from 'axios';
 import { UserContext } from "../context/UserContext.jsx";
+import { fetchAllEvents } from '@/api/event.js';
 
 const FeaturedEventsBannerAll = () => {
     const { user } = useContext(UserContext);
-
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [allEvents, setAllEvents] = useState([]);
     const [registeredEvents, setRegisteredEvents] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingEventId, setLoadingEventId] = useState(null); // New: loading riêng từng nút
-
-    const userSlug = useMemo(() => {
-        if (user?.first_name && user?.last_name) {
-            return (user.first_name + user.last_name)
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .toLowerCase();
-        }
-        return '';
-    }, [user]);
 
 
     const categories = [
@@ -37,11 +27,13 @@ const FeaturedEventsBannerAll = () => {
     // Ham lấy ra danh sách sự kiện đã đăng ký của người dùng
     const fetchRegisteredEvents = async () => {
         if (!user?.access_token) return;
+
         try {
             const { data } = await axios.get("https://comanbe.onrender.com/api/event-registers/", {
                 headers: { Authorization: `Bearer ${user.access_token}` },
             });
-            const registered = data.filter(item => item.user === userSlug);
+            const registered = data.filter(item => item.user === user.id);
+            console.log("tài khoản user có id", user.id)
             setRegisteredEvents(registered);
             console.log("Sự kiện đã đăng ký:", registered);
         } catch (error) {
@@ -49,17 +41,18 @@ const FeaturedEventsBannerAll = () => {
         }
     };
     // lấy ra tất cả danh sách sự kiện
-    const fetchAllEvents = async () => {
-        try {
-            const { data } = await axios.get("https://comanbe.onrender.com/api/events/");
-            setAllEvents(data);
-        } catch (error) {
-            console.error("Lỗi lấy sự kiện:", error);
-        }
-    };
+    // const fetchAllEvents = async () => {
+    //     try {
+    //         const { data } = await axios.get("https://comanbe.onrender.com/api/events/");
+    //         setAllEvents(data);
+    //     } catch (error) {
+    //         console.error("Lỗi lấy sự kiện:", error);
+    //     }
+    // };
     // gọi hàm lấy ra tất cả sự kiện và sự kiện đã đăng ký khi component được mount
     useEffect(() => {
-        fetchAllEvents();
+        fetchAllEvents().then((data) => {
+            setAllEvents(data);})
     }, []);
     // gọi hàm lấy ra sự kiện đã đăng ký khi người dùng đăng nhập
     useEffect(() => {
@@ -79,13 +72,31 @@ const FeaturedEventsBannerAll = () => {
 
         setLoadingEventId(eventId);
 
+
         try {
             if (alreadyRegistered) {
-                await axios.delete(`https://comanbe.onrender.com/api/event-registers/cancel/${eventId}/`, {
+
+                const event = registeredEvents.find((event) => event.event_id === eventId);
+                console.log("Sự kiện bạn muốn hủy", event);
+                
+                const id = event.id; // Sử dụng eventId đã được truyền vào hàm
+                console.log("id của sự kiện hủy:", id);
+                axios.get('https://comanbe.onrender.com/api/event-registers', {
+                    params: { eventId: id }  // Sử dụng id đã được truyền vào hàm
+                })
+                    .then(response => {
+                        const event = response.data.find(item => item.id === id);  // So sánh với id truyền vào
+                        console.log("Sự kiện tìm thấy nênnne:", event);
+                    })
+                    .catch(error => console.error('Lỗi:', error));
+
+                await axios.delete(`https://comanbe.onrender.com/api/event-registers/${eventId}/`, {
                     headers: {
                         Authorization: `Bearer ${user.access_token}`,
                     }
                 });
+                console.log("Đã hủy đăng ký sự kiện:", eventId);
+                alert("Đã hủy đăng ký sự kiện:", eventId);
             } else {
                 await axios.post(
                     "https://comanbe.onrender.com/api/event-registers/",
@@ -148,7 +159,7 @@ const FeaturedEventsBannerAll = () => {
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {filteredEvents.map((event) => {
                                 const registeredItem = registeredEvents.find(
-                                    (item) => item.event === event.title
+                                    (item) => item.event_id === event.id
                                 );
                                 return (
                                     <EventCard

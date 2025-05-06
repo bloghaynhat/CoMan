@@ -6,6 +6,7 @@ export default function Banner({
 }) {
   const canvasRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const prevDimensionsRef = useRef({ width: 0, height: 0 });
   const particlesRef = useRef([]);
   const mouseRef = useRef({ x: 0, y: 0 });
   const animationRef = useRef(0);
@@ -45,7 +46,7 @@ export default function Banner({
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [dimensions]); // Chỉ tái tạo lại khi chiều rộng hoặc chiều cao thay đổi
+  }, []); // Chỉ tái tạo lại khi chiều rộng hoặc chiều cao thay đổi
 
   // ✅ Khởi tạo hạt với số lượng tối ưu
   const initParticles = useCallback((width, height) => {
