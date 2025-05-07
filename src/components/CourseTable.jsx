@@ -10,16 +10,6 @@ import { deleteCourse } from '@/api/admin';
 export default function CourseTable({ courses }) {
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
-  const handleDelete = async () => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) {
-      try {
-        await deleteCourse(course.id, token);
-        onDeleted?.();
-      } catch (error) {
-        alert("Xóa khóa học thất bại.");
-      }
-    }
-  };
   const customStyles = {
     rows: {
       style: {
@@ -57,8 +47,8 @@ export default function CourseTable({ courses }) {
       sortable: true,
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded bg-gradient-to-r from-indigo-500 to-[#00c9ff] flex items-center justify-center text-white">
-            <BookOpen className="h-5 w-5" />
+          <div className="h-10 w-10 rounded  flex items-center justify-center text-white">
+            <img src={row.image} alt="" srcset="" />
           </div>
           <span className="font-medium">{row.title}</span>
         </div>
