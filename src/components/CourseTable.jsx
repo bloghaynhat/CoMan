@@ -1,4 +1,4 @@
-import { BookOpen, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Button } from './ui/button';
 import DataTable from 'react-data-table-component';
@@ -47,7 +47,7 @@ export default function CourseTable({ courses }) {
       sortable: true,
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <img className='h-15 w-25 rounded' src={row.image} alt="" srcset="" />
+          <img className='h-15 w-25 rounded' src={row.image} alt="" />
           <span className="font-medium">{row.title}</span>
         </div>
       ),
