@@ -47,7 +47,7 @@ export default function CourseTable({ courses }) {
       sortable: true,
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <img className='h-20 w-30 rounded' src={row.image} alt="" srcset="" />
+          <img className='h-15 w-25 rounded' src={row.image} alt="" srcset="" />
           <span className="font-medium">{row.title}</span>
         </div>
       ),
