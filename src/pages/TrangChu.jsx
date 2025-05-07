@@ -11,7 +11,6 @@ const TrangChu = () => {
       document.title = "Coman"; // Reset title khi unmount
     };
   }, []);
-  const [courses, setCourses] = useState([]);
   const [freeCourse, setFreeCourse] = useState([]);
   const [paidCourse, setPaidCourse] = useState([]);
   useEffect(() => {
@@ -24,8 +23,6 @@ const TrangChu = () => {
         const free = allCourses.filter((course) => course.is_paid === false);
         const paid = allCourses.filter((course) => course.is_paid === true);
 
-        // Cập nhật state
-        setCourses(allCourses);
         setFreeCourse(free);
         setPaidCourse(paid);
       })
