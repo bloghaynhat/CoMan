@@ -360,7 +360,7 @@ const CourseDetail = () => {
 
                             </div>
                             <div className="p-4">
-                                <div className="absolute top-10 right-96">
+                                <div className="absolute top-100 right-96">
                                     <span
                                         className={`px-3 py-1 rounded-full text-sm font-medium ${isPaid
                                             ? "bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800"

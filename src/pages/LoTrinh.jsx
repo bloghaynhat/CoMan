@@ -1,5 +1,3 @@
-"use client";
-
 import { ArrowLeft, Clock, Construction } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
